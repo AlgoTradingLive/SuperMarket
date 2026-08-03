@@ -4,7 +4,7 @@ import 'checkout_screen.dart';
 
 class CartScreen extends StatefulWidget {
   final Map<int, CartItem> cart;
-  final void Function(dynamic product, int delta) onChangeQty;
+  final void Function(Product product, int delta) onChangeQty;
 
   const CartScreen({super.key, required this.cart, required this.onChangeQty});
 
