@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="mr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>QuickMart - Grocery Delivery</title>
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<header class="topbar">
+  <div class="logo">🛒 QuickMart</div>
+  <div class="search-box">
+    <input type="text" id="searchInput" placeholder="Search for products..." />
+  </div>
+  <button class="cart-btn" id="cartBtn">
+    🛍️ Cart <span id="cartCount">0</span>
+  </button>
+</header>
+
+<nav class="categories" id="categories"></nav>
+
+<main class="product-grid" id="productGrid"></main>
+
+<!-- Cart Sidebar -->
+<div class="cart-overlay" id="cartOverlay"></div>
+<aside class="cart-sidebar" id="cartSidebar">
+  <div class="cart-header">
+    <h2>Your Cart</h2>
+    <button id="closeCart">✕</button>
+  </div>
+  <div class="cart-items" id="cartItems"></div>
+  <div class="cart-footer">
+    <div class="cart-total">Total: ₹<span id="cartTotal">0</span></div>
+    <button class="checkout-btn" id="checkoutBtn">Proceed to Checkout</button>
+  </div>
+</aside>
+
+<!-- Checkout Modal -->
+<div class="modal-overlay" id="checkoutOverlay">
+  <div class="modal">
+    <h2>Delivery Details</h2>
+    <input type="text" id="custName" placeholder="Full Name" />
+    <input type="text" id="custPhone" placeholder="Phone Number" />
+    <textarea id="custAddress" placeholder="Delivery Address"></textarea>
+    <div class="modal-total">Amount to Pay: ₹<span id="modalTotal">0</span></div>
+    <button id="placeOrderBtn">Place Order (Cash on Delivery)</button>
+    <button class="cancel-btn" id="cancelCheckout">Cancel</button>
+  </div>
+</div>
+
+<!-- Order Success Modal -->
+<div class="modal-overlay" id="successOverlay">
+  <div class="modal success">
+    <h2>✅ Order Placed!</h2>
+    <p id="successMsg"></p>
+    <button id="closeSuccess">Continue Shopping</button>
+  </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
