@@ -27,6 +27,8 @@ jobs:
         run: |
           cp -r mobile/lib/. build_project/lib/
           cp mobile/pubspec.yaml build_project/pubspec.yaml
+          mkdir -p build_project/assets
+          cp -r mobile/assets/. build_project/assets/
 
       - name: Add INTERNET permission
         run: |
