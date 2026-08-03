@@ -1,0 +1,14 @@
+[
+  { "id": 1, "name": "Basmati Rice 5kg", "category": "Grocery", "price": 550, "mrp": 620, "unit": "5 kg", "image": "https://images.unsplash.com/photo-1586201375761-83865001e31c?w=400", "inStock": true },
+  { "id": 2, "name": "Toor Dal 1kg", "category": "Grocery", "price": 145, "mrp": 160, "unit": "1 kg", "image": "https://images.unsplash.com/photo-1610725663727-08695a1ac3ce?w=400", "inStock": true },
+  { "id": 3, "name": "Amul Toned Milk", "category": "Dairy", "price": 30, "mrp": 32, "unit": "500 ml", "image": "https://images.unsplash.com/photo-1550583724-b2692b85b150?w=400", "inStock": true },
+  { "id": 4, "name": "Amul Butter", "category": "Dairy", "price": 55, "mrp": 58, "unit": "100 g", "image": "https://images.unsplash.com/photo-1589985270826-4b7bb135bc9d?w=400", "inStock": true },
+  { "id": 5, "name": "Fresh Tomatoes", "category": "Vegetables", "price": 28, "mrp": 35, "unit": "1 kg", "image": "https://images.unsplash.com/photo-1546094096-0df4bcaaa337?w=400", "inStock": true },
+  { "id": 6, "name": "Onion", "category": "Vegetables", "price": 32, "mrp": 40, "unit": "1 kg", "image": "https://images.unsplash.com/photo-1508747703725-719777637510?w=400", "inStock": true },
+  { "id": 7, "name": "Banana", "category": "Fruits", "price": 45, "mrp": 50, "unit": "1 dozen", "image": "https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?w=400", "inStock": true },
+  { "id": 8, "name": "Apple (Shimla)", "category": "Fruits", "price": 180, "mrp": 210, "unit": "1 kg", "image": "https://images.unsplash.com/photo-1560806887-1e4cd0b6cbd6?w=400", "inStock": true },
+  { "id": 9, "name": "Colgate Toothpaste", "category": "Personal Care", "price": 55, "mrp": 65, "unit": "150 g", "image": "https://images.unsplash.com/photo-1584464491033-06628f3a6b7b?w=400", "inStock": true },
+  { "id": 10, "name": "Dove Soap", "category": "Personal Care", "price": 48, "mrp": 55, "unit": "100 g", "image": "https://images.unsplash.com/photo-1600857062241-98e5dba7f214?w=400", "inStock": true },
+  { "id": 11, "name": "Lay's Chips", "category": "Snacks", "price": 20, "mrp": 20, "unit": "52 g", "image": "https://images.unsplash.com/photo-1566478989037-eec170784d0b?w=400", "inStock": true },
+  { "id": 12, "name": "Britannia Bread", "category": "Bakery", "price": 45, "mrp": 48, "unit": "400 g", "image": "https://images.unsplash.com/photo-1509440159596-0249088772ff?w=400", "inStock": true }
+]
