@@ -28,6 +28,10 @@ jobs:
           cp -r mobile/lib/. build_project/lib/
           cp mobile/pubspec.yaml build_project/pubspec.yaml
 
+      - name: Add INTERNET permission
+        run: |
+          sed -i 's#<application#<uses-permission android:name="android.permission.INTERNET"/>\n    <application#' build_project/android/app/src/main/AndroidManifest.xml
+
       - name: Get dependencies
         working-directory: build_project
         run: flutter pub get
