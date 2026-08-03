@@ -20,6 +20,15 @@ class _HomeScreenState extends State<HomeScreen> {
 
   final Map<int, CartItem> cart = {};
 
+  // Offer banners — assets/banners/ मधल्या फोटोंची यादी
+  final List<String> bannerImages = [
+    "assets/banners/banner1.jpg",
+    "assets/banners/banner2.jpg",
+    "assets/banners/banner3.jpg",
+    "assets/banners/banner4.jpg",
+    "assets/banners/banner5.jpg",
+  ];
+
   @override
   void initState() {
     super.initState();
@@ -160,6 +169,30 @@ class _HomeScreenState extends State<HomeScreen> {
                   },
                 );
               },
+            ),
+          ),
+          const SizedBox(height: 12),
+          // ---- Offer Banners (आडवं स्क्रोल) ----
+          SizedBox(
+            height: 140,
+            child: PageView.builder(
+              controller: PageController(viewportFraction: 0.9),
+              itemCount: bannerImages.length,
+              itemBuilder: (_, i) => Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 6),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(12),
+                  child: Image.asset(
+                    bannerImages[i],
+                    fit: BoxFit.cover,
+                    width: double.infinity,
+                    errorBuilder: (_, __, ___) => Container(
+                      color: Colors.grey.shade200,
+                      child: const Center(child: Icon(Icons.image_not_supported_outlined)),
+                    ),
+                  ),
+                ),
+              ),
             ),
           ),
           const SizedBox(height: 8),
