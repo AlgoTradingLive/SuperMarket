@@ -20,8 +20,4 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   assets:
-    - assets/banners/banner1
-    - assets/banners/banner2
-    - assets/banners/banner3
-    - assets/banners/banner4
-    - assets/banners/banner5
+    - assets/banners/
