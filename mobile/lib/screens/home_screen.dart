@@ -172,23 +172,22 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
           const SizedBox(height: 12),
-          // ---- Offer Banners (आडवं स्क्रोल) ----
           SizedBox(
-            height: 140,
+            height: 220,
             child: PageView.builder(
-              controller: PageController(viewportFraction: 0.9),
+              controller: PageController(viewportFraction: 1.0),
               itemCount: bannerImages.length,
               itemBuilder: (_, i) => Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 6),
+                padding: const EdgeInsets.symmetric(horizontal: 12),
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(12),
-                  child: Image.asset(
-                    bannerImages[i],
-                    fit: BoxFit.cover,
-                    width: double.infinity,
-                    errorBuilder: (_, __, ___) => Container(
-                      color: Colors.grey.shade200,
-                      child: const Center(child: Icon(Icons.image_not_supported_outlined)),
+                  child: Container(
+                    color: Colors.grey.shade100,
+                    child: Image.asset(
+                      bannerImages[i],
+                      fit: BoxFit.contain,
+                      width: double.infinity,
+                      errorBuilder: (_, __, ___) => Container(color: Colors.grey.shade200),
                     ),
                   ),
                 ),
