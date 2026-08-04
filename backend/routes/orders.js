@@ -1,4 +1,21 @@
 const express = require("express");
+const TELEGRAM_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
+const TELEGRAM_CHAT_ID = process.env.TELEGRAM_CHAT_ID;
+
+async function notifyTelegram(order) {
+  if (!TELEGRAM_TOKEN || !TELEGRAM_CHAT_ID) return;
+  const itemsList = order.items.map(i => `• ${i.name} x${i.qty}`).join("\n");
+  const text = `🛒 नवीन ऑर्डर #${order.id}\n\n👤 ${order.customerName}\n📞 ${order.phone}\n📍 ${order.address}\n\n${itemsList}\n\n💰 Total: ₹${order.total}`;
+  try {
+    await fetch(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ chat_id: TELEGRAM_CHAT_ID, text }),
+    });
+  } catch (e) {
+    console.error("Telegram notify failed:", e.message);
+  }
+}
 const fs = require("fs");
 const path = require("path");
 
@@ -41,6 +58,7 @@ router.post("/", (req, res) => {
   const orders = readOrders();
   orders.push(order);
   writeOrders(orders);
+  notifyTelegram(order);
 
   res.status(201).json({ message: "Order placed successfully", order });
 });
