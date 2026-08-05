@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../models/product.dart';
 import '../services/api_service.dart';
 import 'cart_screen.dart';
+import 'app_drawer.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -17,16 +18,14 @@ class _HomeScreenState extends State<HomeScreen> {
   String searchQuery = "";
   bool loading = true;
   String? error;
+  int currentNavIndex = 0;
 
   final Map<int, CartItem> cart = {};
 
-  // Offer banners — assets/banners/ मधल्या फोटोंची यादी
   final List<String> bannerImages = [
     "assets/banners/banner1.jpg",
     "assets/banners/banner2.jpg",
     "assets/banners/banner3.jpg",
-    "assets/banners/banner4.jpg",
-    "assets/banners/banner5.jpg",
   ];
 
   @override
@@ -61,7 +60,8 @@ class _HomeScreenState extends State<HomeScreen> {
       });
     } catch (e) {
       setState(() {
-        error = "Server शी कनेक्ट होत नाहीये.\nथोडं थांबून पुन्हा प्रयत्न करा (free server sleep मधून उठायला ५०+ सेकंद लागू शकतात).";
+        error =
+            "Server शी कनेक्ट होत नाहीये.\nथोडं थांबून पुन्हा प्रयत्न करा (free server sleep मधून उठायला ५०+ सेकंद लागू शकतात).";
         loading = false;
       });
     }
@@ -87,16 +87,29 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF5F6F8),
+      drawer: const AppDrawer(),
       appBar: AppBar(
         backgroundColor: const Color(0xFF0B6E4F),
         title: Row(
-  children: [
-    Image.asset('assets/logo.png', height: 36),
-    const SizedBox(width: 10),
-    const Text("कांकरीया सुपरमार्केट",
-        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-  ],
-),
+          children: [
+            ClipRRect(
+              borderRadius: BorderRadius.circular(6),
+              child: Image.asset(
+                'assets/logo.png',
+                height: 36,
+                errorBuilder: (_, __, ___) => const SizedBox.shrink(),
+              ),
+            ),
+            const SizedBox(width: 10),
+            const Expanded(
+              child: Text(
+                "कांकरीया सुपरमार्केट",
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ],
+        ),
         actions: [
           Stack(
             alignment: Alignment.center,
@@ -107,7 +120,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   await Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (_) => CartScreen(cart: cart, onChangeQty: _changeQty),
+                      builder: (_) =>
+                          CartScreen(cart: cart, onChangeQty: _changeQty),
                     ),
                   );
                   setState(() {});
@@ -136,6 +150,28 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       body: Column(
         children: [
+          // Delivery address bar
+          Container(
+            width: double.infinity,
+            color: const Color(0xFF0B6E4F),
+            padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+            child: Row(
+              children: [
+                const Icon(Icons.location_on, color: Colors.white, size: 18),
+                const SizedBox(width: 6),
+                const Text("Delivery to: 422010",
+                    style: TextStyle(color: Colors.white, fontSize: 13)),
+                const Spacer(),
+                TextButton(
+                  onPressed: () {},
+                  style:
+                      TextButton.styleFrom(backgroundColor: Colors.white24),
+                  child: const Text("Change",
+                      style: TextStyle(color: Colors.white, fontSize: 12)),
+                ),
+              ],
+            ),
+          ),
           Padding(
             padding: const EdgeInsets.all(12),
             child: TextField(
@@ -169,7 +205,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   label: Text(c),
                   selected: active,
                   selectedColor: const Color(0xFF0B6E4F),
-                  labelStyle: TextStyle(color: active ? Colors.white : Colors.black87),
+                  labelStyle:
+                      TextStyle(color: active ? Colors.white : Colors.black87),
                   onSelected: (_) {
                     activeCategory = c;
                     _loadProducts();
@@ -184,18 +221,16 @@ class _HomeScreenState extends State<HomeScreen> {
             child: PageView.builder(
               controller: PageController(viewportFraction: 1.0),
               itemCount: bannerImages.length,
-              itemBuilder: (_, i) => Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 12),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(12),
-                  child: Container(
-                    color: Colors.grey.shade100,
-                    child: Image.asset(
-                      bannerImages[i],
-                      fit: BoxFit.contain,
-                      width: double.infinity,
-                      errorBuilder: (_, __, ___) => Container(color: Colors.grey.shade200),
-                    ),
+              itemBuilder: (_, i) => ClipRRect(
+                borderRadius: BorderRadius.circular(12),
+                child: Container(
+                  color: Colors.grey.shade100,
+                  child: Image.asset(
+                    bannerImages[i],
+                    fit: BoxFit.contain,
+                    width: double.infinity,
+                    errorBuilder: (_, __, ___) =>
+                        Container(color: Colors.grey.shade200),
                   ),
                 ),
               ),
@@ -203,6 +238,32 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           const SizedBox(height: 8),
           Expanded(child: _buildBody()),
+        ],
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        type: BottomNavigationBarType.fixed,
+        selectedItemColor: const Color(0xFF0B6E4F),
+        unselectedItemColor: Colors.grey,
+        currentIndex: currentNavIndex,
+        onTap: (i) async {
+          if (i == 2) {
+            await Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => CartScreen(cart: cart, onChangeQty: _changeQty),
+              ),
+            );
+            setState(() {});
+            return;
+          }
+          setState(() => currentNavIndex = i);
+        },
+        items: const [
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
+          BottomNavigationBarItem(icon: Icon(Icons.grid_view), label: "Category"),
+          BottomNavigationBarItem(icon: Icon(Icons.shopping_cart), label: "Cart"),
+          BottomNavigationBarItem(icon: Icon(Icons.replay), label: "Reorder"),
+          BottomNavigationBarItem(icon: Icon(Icons.person), label: "Account"),
         ],
       ),
     );
@@ -219,7 +280,8 @@ class _HomeScreenState extends State<HomeScreen> {
             children: [
               Text(error!, textAlign: TextAlign.center),
               const SizedBox(height: 12),
-              ElevatedButton(onPressed: _loadProducts, child: const Text("पुन्हा प्रयत्न करा")),
+              ElevatedButton(
+                  onPressed: _loadProducts, child: const Text("पुन्हा प्रयत्न करा")),
             ],
           ),
         ),
@@ -244,7 +306,9 @@ class _HomeScreenState extends State<HomeScreen> {
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(10),
-            boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.06), blurRadius: 4)],
+            boxShadow: [
+              BoxShadow(color: Colors.black.withOpacity(0.06), blurRadius: 4)
+            ],
           ),
           padding: const EdgeInsets.all(10),
           child: Column(
@@ -257,16 +321,33 @@ class _HomeScreenState extends State<HomeScreen> {
                   height: 110,
                   width: double.infinity,
                   fit: BoxFit.cover,
+                  loadingBuilder: (context, child, progress) {
+                    if (progress == null) return child;
+                    return Container(
+                      height: 110,
+                      color: Colors.grey.shade100,
+                      child: const Center(
+                        child: SizedBox(
+                          height: 20,
+                          width: 20,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        ),
+                      ),
+                    );
+                  },
                   errorBuilder: (_, __, ___) => Container(
-                    height: 90,
+                    height: 110,
                     color: Colors.grey.shade200,
                     child: const Icon(Icons.image_not_supported_outlined),
                   ),
                 ),
               ),
               const SizedBox(height: 6),
-              Text(p.name, maxLines: 2, overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
+              Text(p.name,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style:
+                      const TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
               Text(p.unit, style: TextStyle(fontSize: 11, color: Colors.grey.shade600)),
               const SizedBox(height: 4),
               Row(
@@ -282,7 +363,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ]
                 ],
               ),
-              const Spacer(),
+              const SizedBox(height: 8),
               qty == 0
                   ? SizedBox(
                       width: double.infinity,
