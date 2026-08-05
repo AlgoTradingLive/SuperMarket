@@ -11,7 +11,7 @@ class QuickMartApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'QuickMart',
+      title: 'कांकरीया सुपरमार्केट',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         primaryColor: const Color(0xFF0B6E4F),
