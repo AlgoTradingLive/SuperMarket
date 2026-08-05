@@ -89,7 +89,14 @@ class _HomeScreenState extends State<HomeScreen> {
       backgroundColor: const Color(0xFFF5F6F8),
       appBar: AppBar(
         backgroundColor: const Color(0xFF0B6E4F),
-        title: const Text("🛒 QuickMart", style: TextStyle(fontWeight: FontWeight.bold)),
+        title: Row(
+  children: [
+    Image.asset('assets/logo.png', height: 36),
+    const SizedBox(width: 10),
+    const Text("कांकरीया सुपरमार्केट",
+        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+  ],
+),
         actions: [
           Stack(
             alignment: Alignment.center,
