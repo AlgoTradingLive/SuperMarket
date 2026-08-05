@@ -3,7 +3,6 @@ import 'package:http/http.dart' as http;
 import '../models/product.dart';
 
 class ApiService {
-  // तुमचं Render backend URL
   static const String baseUrl = "https://supermarket-1f13.onrender.com/api";
 
   static Future<List<Product>> fetchProducts({
