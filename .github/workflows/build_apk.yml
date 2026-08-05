@@ -38,6 +38,10 @@ jobs:
         working-directory: build_project
         run: flutter pub get
 
+      - name: Generate app icon
+        working-directory: build_project
+        run: flutter pub run flutter_launcher_icons
+
       - name: Build APK
         working-directory: build_project
         run: flutter build apk --release
