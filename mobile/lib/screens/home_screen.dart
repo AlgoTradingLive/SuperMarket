@@ -87,7 +87,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF5F6F8),
-      drawer: const AppDrawer(),
+      drawer: AppDrawer(cart: cart, onChangeQty: _changeQty),
       appBar: AppBar(
         backgroundColor: const Color(0xFF0B6E4F),
         title: Row(
@@ -103,7 +103,7 @@ class _HomeScreenState extends State<HomeScreen> {
             const SizedBox(width: 10),
             const Expanded(
               child: Text(
-                "कांकरीया सुपरमार्केट",
+                "KS",
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                 overflow: TextOverflow.ellipsis,
               ),
