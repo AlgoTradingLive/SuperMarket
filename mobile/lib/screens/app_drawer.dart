@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
+import '../models/product.dart';
+import 'cart_screen.dart';
 
 class AppDrawer extends StatelessWidget {
-  const AppDrawer({super.key});
+  final Map<int, CartItem> cart;
+  final void Function(Product product, int delta) onChangeQty;
+
+  const AppDrawer({super.key, required this.cart, required this.onChangeQty});
 
   @override
   Widget build(BuildContext context) {
@@ -38,13 +43,29 @@ class AppDrawer extends StatelessWidget {
               child: ListView(
                 padding: EdgeInsets.zero,
                 children: [
-                  _tile(Icons.grid_view, "Shop by Category"),
-                  _tile(Icons.shopping_cart_outlined, "View Cart"),
-                  _tile(Icons.help_outline, "Help & Support"),
-                  _tile(Icons.description_outlined, "Refund, Terms and Policies"),
-                  _tile(Icons.info_outline, "About Us"),
-                  _tile(Icons.storefront_outlined, "Store Information"),
-                  _tile(Icons.edit_location_alt_outlined, "Change Location"),
+                  _tile(context, Icons.grid_view, "Shop by Category", () {
+                    Navigator.pop(context);
+                  }),
+                  _tile(context, Icons.shopping_cart_outlined, "View Cart", () {
+                    Navigator.pop(context);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) =>
+                            CartScreen(cart: cart, onChangeQty: onChangeQty),
+                      ),
+                    );
+                  }),
+                  _tile(context, Icons.help_outline, "Help & Support",
+                      () => _comingSoon(context)),
+                  _tile(context, Icons.description_outlined,
+                      "Refund, Terms and Policies", () => _comingSoon(context)),
+                  _tile(context, Icons.info_outline, "About Us",
+                      () => _comingSoon(context)),
+                  _tile(context, Icons.storefront_outlined,
+                      "Store Information", () => _comingSoon(context)),
+                  _tile(context, Icons.edit_location_alt_outlined,
+                      "Change Location", () => _comingSoon(context)),
                 ],
               ),
             ),
@@ -58,12 +79,19 @@ class AppDrawer extends StatelessWidget {
     );
   }
 
-  Widget _tile(IconData icon, String title) {
+  void _comingSoon(BuildContext context) {
+    Navigator.pop(context);
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text("लवकरच उपलब्ध होईल")),
+    );
+  }
+
+  Widget _tile(BuildContext context, IconData icon, String title, VoidCallback onTap) {
     return ListTile(
       leading: Icon(icon, color: const Color(0xFF0B6E4F)),
       title: Text(title),
       trailing: const Icon(Icons.chevron_right, size: 18),
-      onTap: () {},
+      onTap: onTap,
     );
   }
 }
