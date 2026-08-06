@@ -5,6 +5,7 @@ import '../services/api_service.dart';
 import 'cart_screen.dart';
 import 'products_screen.dart';
 import 'app_drawer.dart';
+import 'category_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -241,7 +242,15 @@ class _HomeScreenState extends State<HomeScreen> {
         unselectedItemColor: Colors.grey,
         currentIndex: 0,
         onTap: (i) async {
-          if (i == 2) {
+          if (i == 1) {
+            await Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => CategoryScreen(cart: cart, onChangeQty: _changeQty),
+              ),
+            );
+            setState(() {});
+          } else if (i == 2) {
             await Navigator.push(
               context,
               MaterialPageRoute(

@@ -1,12 +1,19 @@
 import 'package:flutter/material.dart';
 import '../models/product.dart';
 import 'cart_screen.dart';
+import 'category_screen.dart';
+import 'info_screens.dart';
 
 class AppDrawer extends StatelessWidget {
   final Map<int, CartItem> cart;
   final void Function(Product product, int delta) onChangeQty;
 
   const AppDrawer({super.key, required this.cart, required this.onChangeQty});
+
+  void _go(BuildContext context, Widget screen) {
+    Navigator.pop(context);
+    Navigator.push(context, MaterialPageRoute(builder: (_) => screen));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -44,28 +51,32 @@ class AppDrawer extends StatelessWidget {
                 padding: EdgeInsets.zero,
                 children: [
                   _tile(context, Icons.grid_view, "Shop by Category", () {
-                    Navigator.pop(context);
+                    _go(context, CategoryScreen(cart: cart, onChangeQty: onChangeQty));
                   }),
                   _tile(context, Icons.shopping_cart_outlined, "View Cart", () {
+                    _go(context, CartScreen(cart: cart, onChangeQty: onChangeQty));
+                  }),
+                  _tile(context, Icons.help_outline, "Help & Support", () {
+                    _go(context, const HelpSupportScreen());
+                  }),
+                  _tile(context, Icons.description_outlined,
+                      "Refund, Terms and Policies", () {
+                    _go(context, const TermsPolicyScreen());
+                  }),
+                  _tile(context, Icons.info_outline, "About Us", () {
+                    _go(context, const AboutUsScreen());
+                  }),
+                  _tile(context, Icons.storefront_outlined,
+                      "Store Information", () {
+                    _go(context, const StoreInformationScreen());
+                  }),
+                  _tile(context, Icons.edit_location_alt_outlined,
+                      "Change Location", () {
                     Navigator.pop(context);
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) =>
-                            CartScreen(cart: cart, onChangeQty: onChangeQty),
-                      ),
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text("लवकरच उपलब्ध होईल")),
                     );
                   }),
-                  _tile(context, Icons.help_outline, "Help & Support",
-                      () => _comingSoon(context)),
-                  _tile(context, Icons.description_outlined,
-                      "Refund, Terms and Policies", () => _comingSoon(context)),
-                  _tile(context, Icons.info_outline, "About Us",
-                      () => _comingSoon(context)),
-                  _tile(context, Icons.storefront_outlined,
-                      "Store Information", () => _comingSoon(context)),
-                  _tile(context, Icons.edit_location_alt_outlined,
-                      "Change Location", () => _comingSoon(context)),
                 ],
               ),
             ),
@@ -76,13 +87,6 @@ class AppDrawer extends StatelessWidget {
           ],
         ),
       ),
-    );
-  }
-
-  void _comingSoon(BuildContext context) {
-    Navigator.pop(context);
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text("लवकरच उपलब्ध होईल")),
     );
   }
 
