@@ -9,13 +9,19 @@ function readProducts() {
   return JSON.parse(fs.readFileSync(DATA_FILE, "utf-8"));
 }
 
-// GET /api/products?category=Grocery&search=rice
+// GET /api/products?section=Grocery & Kitchen&subCategory=Pulses&search=dal
 router.get("/", (req, res) => {
   let products = readProducts();
-  const { category, search } = req.query;
+  const { section, subCategory, category, search } = req.query;
 
-  if (category && category !== "All") {
-    products = products.filter((p) => p.category === category);
+  // 'category' जुनं नाव - backward compatibility साठी 'section' सारखंच वापरतो
+  const sectionFilter = section || category;
+
+  if (sectionFilter && sectionFilter !== "All") {
+    products = products.filter((p) => p.section === sectionFilter);
+  }
+  if (subCategory) {
+    products = products.filter((p) => p.subCategory === subCategory);
   }
   if (search) {
     const q = search.toLowerCase();
@@ -24,11 +30,11 @@ router.get("/", (req, res) => {
   res.json(products);
 });
 
-// GET /api/products/categories
+// GET /api/products/categories -> सगळे sections ("All" सकट)
 router.get("/categories", (req, res) => {
   const products = readProducts();
-  const categories = ["All", ...new Set(products.map((p) => p.category))];
-  res.json(categories);
+  const sections = ["All", ...new Set(products.map((p) => p.section))];
+  res.json(sections);
 });
 
 // GET /api/products/:id
