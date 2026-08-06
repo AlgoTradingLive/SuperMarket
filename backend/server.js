@@ -4,6 +4,7 @@ const path = require("path");
 
 const productsRouter = require("./routes/products");
 const ordersRouter = require("./routes/orders");
+const subcategoriesRouter = require("./routes/subcategories");
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -14,6 +15,7 @@ app.use(express.json());
 // API routes
 app.use("/api/products", productsRouter);
 app.use("/api/orders", ordersRouter);
+app.use("/api/subcategories", subcategoriesRouter);
 
 // Serve frontend (so the whole app can run from one free server)
 app.use(express.static(path.join(__dirname, "..", "frontend")));
@@ -23,5 +25,5 @@ app.get("/", (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`🛒 JioMart-clone server running at http://localhost:${PORT}`);
+  console.log(`🛒 QuickMart server running at http://localhost:${PORT}`);
 });
