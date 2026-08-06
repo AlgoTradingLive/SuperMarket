@@ -1,0 +1,210 @@
+import 'package:flutter/material.dart';
+import '../models/product.dart';
+import '../services/api_service.dart';
+
+class ProductsScreen extends StatefulWidget {
+  final String title;
+  final String? section;
+  final String? subCategory;
+  final String? search;
+  final Map<int, CartItem> cart;
+  final void Function(Product product, int delta) onChangeQty;
+
+  const ProductsScreen({
+    super.key,
+    required this.title,
+    this.section,
+    this.subCategory,
+    this.search,
+    required this.cart,
+    required this.onChangeQty,
+  });
+
+  @override
+  State<ProductsScreen> createState() => _ProductsScreenState();
+}
+
+class _ProductsScreenState extends State<ProductsScreen> {
+  List<Product> products = [];
+  bool loading = true;
+  String? error;
+
+  @override
+  void initState() {
+    super.initState();
+    _load();
+  }
+
+  Future<void> _load() async {
+    setState(() {
+      loading = true;
+      error = null;
+    });
+    try {
+      final list = await ApiService.fetchProducts(
+        section: widget.section ?? "All",
+        subCategory: widget.subCategory ?? "",
+        search: widget.search ?? "",
+      );
+      setState(() {
+        products = list;
+        loading = false;
+      });
+    } catch (e) {
+      setState(() {
+        error =
+            "Server शी कनेक्ट होत नाहीये.\nथोडं थांबून पुन्हा प्रयत्न करा.";
+        loading = false;
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: const Color(0xFFF5F6F8),
+      appBar: AppBar(
+        backgroundColor: const Color(0xFF0B6E4F),
+        title: Text(widget.title),
+      ),
+      body: _buildBody(),
+    );
+  }
+
+  Widget _buildBody() {
+    if (loading) return const Center(child: CircularProgressIndicator());
+    if (error != null) {
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(error!, textAlign: TextAlign.center),
+              const SizedBox(height: 12),
+              ElevatedButton(onPressed: _load, child: const Text("पुन्हा प्रयत्न करा")),
+            ],
+          ),
+        ),
+      );
+    }
+    if (products.isEmpty) {
+      return const Center(child: Text("Products सापडले नाहीत"));
+    }
+    return GridView.builder(
+      padding: const EdgeInsets.all(12),
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        mainAxisExtent: 260,
+        crossAxisSpacing: 12,
+        mainAxisSpacing: 12,
+      ),
+      itemCount: products.length,
+      itemBuilder: (_, i) {
+        final p = products[i];
+        final qty = widget.cart[p.id]?.qty ?? 0;
+        return Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(10),
+            boxShadow: [
+              BoxShadow(color: Colors.black.withOpacity(0.06), blurRadius: 4)
+            ],
+          ),
+          padding: const EdgeInsets.all(10),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              ClipRRect(
+                borderRadius: BorderRadius.circular(8),
+                child: Image.network(
+                  p.image,
+                  height: 110,
+                  width: double.infinity,
+                  fit: BoxFit.cover,
+                  loadingBuilder: (context, child, progress) {
+                    if (progress == null) return child;
+                    return Container(
+                      height: 110,
+                      color: Colors.grey.shade100,
+                      child: const Center(
+                        child: SizedBox(
+                          height: 20,
+                          width: 20,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        ),
+                      ),
+                    );
+                  },
+                  errorBuilder: (_, __, ___) => Container(
+                    height: 110,
+                    color: Colors.grey.shade200,
+                    child: const Icon(Icons.image_not_supported_outlined),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 6),
+              Text(p.name,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style:
+                      const TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
+              Text(p.unit, style: TextStyle(fontSize: 11, color: Colors.grey.shade600)),
+              const SizedBox(height: 4),
+              Row(
+                children: [
+                  Text("₹${p.price}", style: const TextStyle(fontWeight: FontWeight.bold)),
+                  if (p.mrp > p.price) ...[
+                    const SizedBox(width: 6),
+                    Text("₹${p.mrp}",
+                        style: TextStyle(
+                            fontSize: 11,
+                            decoration: TextDecoration.lineThrough,
+                            color: Colors.grey.shade500)),
+                  ]
+                ],
+              ),
+              const SizedBox(height: 8),
+              qty == 0
+                  ? SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF0B6E4F),
+                          padding: const EdgeInsets.symmetric(vertical: 8),
+                        ),
+                        onPressed: () => setState(() => widget.onChangeQty(p, 1)),
+                        child: const Text("ADD", style: TextStyle(color: Colors.white)),
+                      ),
+                    )
+                  : Container(
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF0B6E4F),
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          IconButton(
+                            iconSize: 18,
+                            color: Colors.white,
+                            icon: const Icon(Icons.remove),
+                            onPressed: () => setState(() => widget.onChangeQty(p, -1)),
+                          ),
+                          Text('$qty', style: const TextStyle(color: Colors.white)),
+                          IconButton(
+                            iconSize: 18,
+                            color: Colors.white,
+                            icon: const Icon(Icons.add),
+                            onPressed: () => setState(() => widget.onChangeQty(p, 1)),
+                          ),
+                        ],
+                      ),
+                    ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+}
