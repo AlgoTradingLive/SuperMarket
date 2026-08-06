@@ -1,7 +1,8 @@
 class Product {
   final int id;
   final String name;
-  final String category;
+  final String subCategory;
+  final String section;
   final int price;
   final int mrp;
   final String unit;
@@ -11,7 +12,8 @@ class Product {
   Product({
     required this.id,
     required this.name,
-    required this.category,
+    required this.subCategory,
+    required this.section,
     required this.price,
     required this.mrp,
     required this.unit,
@@ -23,7 +25,8 @@ class Product {
     return Product(
       id: json['id'],
       name: json['name'] ?? '',
-      category: json['category'] ?? '',
+      subCategory: json['subCategory'] ?? '',
+      section: json['section'] ?? '',
       price: (json['price'] ?? 0) is int
           ? json['price']
           : (json['price'] as num).toInt(),
