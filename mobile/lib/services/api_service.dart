@@ -1,16 +1,19 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../models/product.dart';
+import '../models/subcategory.dart';
 
 class ApiService {
   static const String baseUrl = "https://supermarket-1f13.onrender.com/api";
 
   static Future<List<Product>> fetchProducts({
-    String category = "All",
+    String section = "All",
+    String subCategory = "",
     String search = "",
   }) async {
     final params = <String, String>{};
-    if (category != "All") params['category'] = category;
+    if (section != "All") params['section'] = section;
+    if (subCategory.isNotEmpty) params['subCategory'] = subCategory;
     if (search.isNotEmpty) params['search'] = search;
 
     final uri = Uri.parse("$baseUrl/products").replace(queryParameters: params);
@@ -23,13 +26,16 @@ class ApiService {
     throw Exception("Products load करता आले नाहीत");
   }
 
-  static Future<List<String>> fetchCategories() async {
-    final uri = Uri.parse("$baseUrl/products/categories");
+  static Future<Map<String, List<Subcategory>>> fetchSubcategories() async {
+    final uri = Uri.parse("$baseUrl/subcategories");
     final res = await http.get(uri).timeout(const Duration(seconds: 60));
 
     if (res.statusCode == 200) {
-      final List data = jsonDecode(res.body);
-      return data.map((e) => e.toString()).toList();
+      final Map<String, dynamic> data = jsonDecode(res.body);
+      return data.map((section, list) => MapEntry(
+            section,
+            (list as List).map((e) => Subcategory.fromJson(e)).toList(),
+          ));
     }
     throw Exception("Categories load करता आल्या नाहीत");
   }
