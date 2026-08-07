@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class InfoSection {
   final String heading;
   final String body;
-  InfoSection(this.heading, this.body);
+ const InfoSection(this.heading, this.body);
 }
 
 class StaticInfoScreen extends StatelessWidget {
