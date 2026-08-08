@@ -21,7 +21,7 @@ jobs:
           channel: 'stable'
 
       - name: Create fresh Flutter Android scaffold
-        run: flutter create --platforms=android --org com.super.market build_project
+        run: flutter create --platforms=android --org com.supermarket build_project
 
       - name: Copy our app code into scaffold
         run: |
@@ -40,8 +40,8 @@ jobs:
 
       - name: Set package name (applicationId + namespace)
         run: |
-          sed -i 's/applicationId = "com.super.market.build_project"/applicationId = "com.super.market"/' build_project/android/app/build.gradle
-          sed -i 's/namespace = "com.super.market.build_project"/namespace = "com.super.market"/' build_project/android/app/build.gradle
+          sed -i 's/applicationId = "com.supermarket.build_project"/applicationId = "com.supermarket.app"/' build_project/android/app/build.gradle
+          sed -i 's/namespace = "com.supermarket.build_project"/namespace = "com.supermarket.app"/' build_project/android/app/build.gradle
 
       - name: Get dependencies
         working-directory: build_project
