@@ -21,7 +21,7 @@ jobs:
           channel: 'stable'
 
       - name: Create fresh Flutter Android scaffold
-        run: flutter create --platforms=android --org com.algotradinglive build_project
+        run: flutter create --platforms=android --org com.super.market build_project
 
       - name: Copy our app code into scaffold
         run: |
@@ -34,6 +34,15 @@ jobs:
         run: |
           sed -i 's#<application#<uses-permission android:name="android.permission.INTERNET"/>\n    <application#' build_project/android/app/src/main/AndroidManifest.xml
 
+      - name: Set app name (label)
+        run: |
+          sed -i 's/android:label="build_project"/android:label="SuperMarket"/' build_project/android/app/src/main/AndroidManifest.xml
+
+      - name: Set package name (applicationId + namespace)
+        run: |
+          sed -i 's/applicationId = "com.super.market.build_project"/applicationId = "com.super.market"/' build_project/android/app/build.gradle
+          sed -i 's/namespace = "com.super.market.build_project"/namespace = "com.super.market"/' build_project/android/app/build.gradle
+
       - name: Get dependencies
         working-directory: build_project
         run: flutter pub get
@@ -42,6 +51,57 @@ jobs:
         working-directory: build_project
         run: flutter pub run flutter_launcher_icons
 
+      - name: Decode keystore
+        working-directory: build_project
+        run: |
+          echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 -d > android/app/super-market-release.jks
+
+      - name: Create key.properties
+        working-directory: build_project
+        run: |
+          cat > android/key.properties << EOF
+          storePassword=${{ secrets.KEYSTORE_PASSWORD }}
+          keyPassword=${{ secrets.KEY_PASSWORD }}
+          keyAlias=${{ secrets.KEY_ALIAS }}
+          storeFile=super-market-release.jks
+          EOF
+
+      - name: Configure signing in build.gradle
+        working-directory: build_project
+        run: |
+          python3 - << 'PYEOF'
+          import re
+          path = "android/app/build.gradle"
+          content = open(path).read()
+
+          signing_load = '''
+          def keystorePropertiesFile = rootProject.file("key.properties")
+          def keystoreProperties = new Properties()
+          if (keystorePropertiesFile.exists()) {
+              keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+          }
+          '''
+          content = content.replace("android {", signing_load + "\nandroid {", 1)
+
+          signing_config = '''
+              signingConfigs {
+                  release {
+                      keyAlias keystoreProperties['keyAlias']
+                      keyPassword keystoreProperties['keyPassword']
+                      storeFile keystoreProperties['storeFile'] ? file(keystoreProperties['storeFile']) : null
+                      storePassword keystoreProperties['storePassword']
+                  }
+              }
+              buildTypes {
+                  release {
+                      signingConfig signingConfigs.release
+                  }
+              }
+          '''
+          content = re.sub(r'buildTypes\s*\{\s*release\s*\{[^}]*\}\s*\}', signing_config.strip(), content)
+          open(path, "w").write(content)
+          PYEOF
+
       - name: Build APK
         working-directory: build_project
         run: flutter build apk --release
@@ -49,26 +109,15 @@ jobs:
       - name: Build AAB
         working-directory: build_project
         run: flutter build appbundle --release
-        
+
       - name: Upload APK as artifact
         uses: actions/upload-artifact@v4
         with:
-          name: quickmart-apk
+          name: app-release-apk
           path: build_project/build/app/outputs/flutter-apk/app-release.apk
 
       - name: Upload AAB as artifact
         uses: actions/upload-artifact@v4
         with:
-          name: quickmart-aab
+          name: app-release-aab
           path: build_project/build/app/outputs/bundle/release/app-release.aab
-
-      - name: Create GitHub Release with APK
-        uses: softprops/action-gh-release@v2
-        with:
-          tag_name: build-${{ github.run_number }}
-          name: QuickMart Build ${{ github.run_number }}
-          files: |
-            build_project/build/app/outputs/flutter-apk/app-release.apk
-            build_project/build/app/outputs/bundle/release/app-release.aab
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
