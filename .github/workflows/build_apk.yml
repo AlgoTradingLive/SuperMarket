@@ -46,17 +46,29 @@ jobs:
         working-directory: build_project
         run: flutter build apk --release
 
+      - name: Build AAB
+        working-directory: build_project
+        run: flutter build appbundle --release
+        
       - name: Upload APK as artifact
         uses: actions/upload-artifact@v4
         with:
           name: quickmart-apk
           path: build_project/build/app/outputs/flutter-apk/app-release.apk
 
+      - name: Upload AAB as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: quickmart-aab
+          path: build_project/build/app/outputs/bundle/release/app-release.aab
+
       - name: Create GitHub Release with APK
         uses: softprops/action-gh-release@v2
         with:
           tag_name: build-${{ github.run_number }}
-          name: QuickMart APK build ${{ github.run_number }}
-          files: build_project/build/app/outputs/flutter-apk/app-release.apk
+          name: QuickMart Build ${{ github.run_number }}
+          files: |
+            build_project/build/app/outputs/flutter-apk/app-release.apk
+            build_project/build/app/outputs/bundle/release/app-release.aab
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
