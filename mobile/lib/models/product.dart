@@ -21,6 +21,11 @@ class Product {
     required this.inStock,
   });
 
+  int get discountPercent {
+    if (mrp <= price || mrp == 0) return 0;
+    return (((mrp - price) / mrp) * 100).round();
+  }
+
   factory Product.fromJson(Map<String, dynamic> json) {
     return Product(
       id: json['id'],
