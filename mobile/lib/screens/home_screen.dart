@@ -7,6 +7,9 @@ import 'products_screen.dart';
 import 'app_drawer.dart';
 import 'category_screen.dart';
 
+const kBrandGreen = Color(0xFF2E7D32);
+const kBrandGreenLight = Color(0xFFE8F5E9);
+
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
@@ -105,7 +108,7 @@ class _HomeScreenState extends State<HomeScreen> {
       backgroundColor: const Color(0xFFF5F6F8),
       drawer: AppDrawer(cart: cart, onChangeQty: _changeQty),
       appBar: AppBar(
-        backgroundColor: const Color(0xFF1565C0),
+        backgroundColor: kBrandGreen,
         title: Image.asset(
           'assets/logo.png',
           height: 40,
@@ -157,7 +160,7 @@ class _HomeScreenState extends State<HomeScreen> {
             // Delivery address bar
             Container(
               width: double.infinity,
-              color: const Color(0xFF1565C0),
+              color: kBrandGreen,
               padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
               child: Row(
                 children: [
@@ -223,7 +226,7 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
-        selectedItemColor: const Color(0xFF1565C0),
+        selectedItemColor: kBrandGreen,
         unselectedItemColor: Colors.grey,
         currentIndex: 0,
         onTap: (i) async {
@@ -297,8 +300,22 @@ class _HomeScreenState extends State<HomeScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(sectionName,
-              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
+            decoration: BoxDecoration(
+              color: kBrandGreenLight,
+              borderRadius: BorderRadius.circular(24),
+            ),
+            child: Text(
+              sectionName,
+              style: const TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: kBrandGreen,
+              ),
+            ),
+          ),
           const SizedBox(height: 12),
           GridView.builder(
             shrinkWrap: true,
