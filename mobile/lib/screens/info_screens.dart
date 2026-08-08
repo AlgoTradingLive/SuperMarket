@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+const kBrandGreen = Color(0xFF2E7D32);
+
 class InfoSection {
   final String heading;
   final String body;
@@ -17,7 +19,8 @@ class StaticInfoScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: const Color(0xFFF5F6F8),
       appBar: AppBar(
-        backgroundColor: const Color(0xFF1565C0),
+        backgroundColor: kBrandGreen,
+        foregroundColor: Colors.white,
         title: Text(title),
       ),
       body: ListView(

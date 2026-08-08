@@ -4,6 +4,8 @@ import 'cart_screen.dart';
 import 'category_screen.dart';
 import 'info_screens.dart';
 
+const kBrandGreen = Color(0xFF2E7D32);
+
 class AppDrawer extends StatelessWidget {
   final Map<int, CartItem> cart;
   final void Function(Product product, int delta) onChangeQty;
@@ -23,7 +25,7 @@ class AppDrawer extends StatelessWidget {
           children: [
             Container(
               width: double.infinity,
-              color: const Color(0xFF1565C0),
+              color: kBrandGreen,
               padding: const EdgeInsets.fromLTRB(20, 20, 20, 20),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -92,7 +94,7 @@ class AppDrawer extends StatelessWidget {
 
   Widget _tile(BuildContext context, IconData icon, String title, VoidCallback onTap) {
     return ListTile(
-      leading: Icon(icon, color: const Color(0xFF1565C0)),
+      leading: Icon(icon, color: kBrandGreen),
       title: Text(title),
       trailing: const Icon(Icons.chevron_right, size: 18),
       onTap: onTap,

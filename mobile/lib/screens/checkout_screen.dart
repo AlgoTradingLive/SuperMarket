@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import '../models/product.dart';
 import '../services/api_service.dart';
 
+const kBrandGreen = Color(0xFF2E7D32);
+
 class CheckoutScreen extends StatefulWidget {
   final List<CartItem> items;
   final int total;
@@ -65,7 +67,8 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: const Color(0xFF1565C0),
+        backgroundColor: kBrandGreen,
+        foregroundColor: Colors.white,
         title: const Text("Delivery Details"),
       ),
       body: Padding(
@@ -95,7 +98,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
             const SizedBox(height: 16),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF1565C0),
+                backgroundColor: kBrandGreen,
                 padding: const EdgeInsets.symmetric(vertical: 14),
               ),
               onPressed: placing ? null : _placeOrder,

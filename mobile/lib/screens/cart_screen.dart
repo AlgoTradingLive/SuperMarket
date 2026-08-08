@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import '../models/product.dart';
 import 'checkout_screen.dart';
 
+const kBrandGreen = Color(0xFF2E7D32);
+const kBrandGreenLight = Color(0xFFE8F5E9);
+
 class CartScreen extends StatefulWidget {
   final Map<int, CartItem> cart;
   final void Function(Product product, int delta) onChangeQty;
@@ -24,7 +27,8 @@ class _CartScreenState extends State<CartScreen> {
     return Scaffold(
       backgroundColor: const Color(0xFFF5F6F8),
       appBar: AppBar(
-        backgroundColor: const Color(0xFF1565C0),
+        backgroundColor: kBrandGreen,
+        foregroundColor: Colors.white,
         title: const Text("Cart"),
       ),
       body: items.isEmpty
@@ -34,14 +38,14 @@ class _CartScreenState extends State<CartScreen> {
                 if (savings > 0)
                   Container(
                     width: double.infinity,
-                    color: const Color(0xFFE3F2FD),
+                    color: kBrandGreenLight,
                     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text("Savings ₹$savings",
                             style: const TextStyle(
-                                color: Color(0xFF2E7D32), fontWeight: FontWeight.bold)),
+                                color: kBrandGreen, fontWeight: FontWeight.bold)),
                         Text("Cart Total ₹$total",
                             style: const TextStyle(fontWeight: FontWeight.bold)),
                       ],
@@ -90,13 +94,13 @@ class _CartScreenState extends State<CartScreen> {
                                   if (itemSavings > 0)
                                     Text("You Save ₹$itemSavings",
                                         style: const TextStyle(
-                                            color: Color(0xFF2E7D32), fontSize: 12)),
+                                            color: kBrandGreen, fontSize: 12)),
                                 ],
                               ),
                             ),
                             Container(
                               decoration: BoxDecoration(
-                                color: const Color(0xFF1565C0),
+                                color: kBrandGreen,
                                 borderRadius: BorderRadius.circular(6),
                               ),
                               child: Row(
@@ -148,7 +152,7 @@ class _CartScreenState extends State<CartScreen> {
                 width: double.infinity,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF1565C0),
+                    backgroundColor: kBrandGreen,
                     padding: const EdgeInsets.symmetric(vertical: 14),
                   ),
                   onPressed: items.isEmpty
