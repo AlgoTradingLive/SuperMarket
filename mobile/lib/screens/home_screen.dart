@@ -106,25 +106,10 @@ class _HomeScreenState extends State<HomeScreen> {
       drawer: AppDrawer(cart: cart, onChangeQty: _changeQty),
       appBar: AppBar(
         backgroundColor: const Color(0xFF1565C0),
-        title: Row(
-          children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(6),
-              child: Image.asset(
-                'assets/logo.png',
-                height: 36,
-                errorBuilder: (_, __, ___) => const SizedBox.shrink(),
-              ),
-            ),
-            const SizedBox(width: 10),
-            const Expanded(
-              child: Text(
-                "कांकरीया सुपरमार्केट",
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
-          ],
+        title: Image.asset(
+          'assets/logo.png',
+          height: 40,
+          errorBuilder: (_, __, ___) => const Text("कांकरीया सुपरमार्केट"),
         ),
         actions: [
           Stack(
