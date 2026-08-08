@@ -43,7 +43,7 @@ class StaticInfoScreen extends StatelessWidget {
   }
 }
 
-// ---- कांकरीया सुपरमार्केट साठी standard content ----
+// ----  सुपरमार्केट साठी standard content ----
 
 class AboutUsScreen extends StatelessWidget {
   const AboutUsScreen({super.key});
@@ -53,7 +53,7 @@ class AboutUsScreen extends StatelessWidget {
       title: "About Us",
       sections: [
         InfoSection("आमच्याबद्दल",
-            "कांकरीया सुपरमार्केट हे नाशिकमधलं विश्वासू आणि दर्जेदार grocery store आहे. रोजच्या गरजेच्या वस्तूंपासून ते खास पदार्थांपर्यंत, सगळं एकाच ठिकाणी परवडणाऱ्या किमतीत उपलब्ध करून देणं हे आमचं ध्येय आहे."),
+            "सुपरमार्केट हे विश्वासू आणि दर्जेदार grocery store आहे. रोजच्या गरजेच्या वस्तूंपासून ते खास पदार्थांपर्यंत, सगळं एकाच ठिकाणी परवडणाऱ्या किमतीत उपलब्ध करून देणं हे आमचं ध्येय आहे."),
         InfoSection("आमची बांधिलकी",
             "उत्तम दर्जाचे उत्पादने, वाजवी दर, आणि जलद घरपोच सेवा — या तिन्हींवर आमचा भर आहे. आमच्या ग्राहकांचं समाधान हीच आमची सर्वात मोठी उपलब्धी आहे."),
       ],
@@ -69,8 +69,8 @@ class StoreInformationScreen extends StatelessWidget {
       title: "Store Information",
       sections: [
         InfoSection("पत्ता",
-            "कांकरीया सुपरमार्केट\nITI रोड, शिवशक्ती चौक, त्रिमूर्ती चौक, नाशिक"),
-        InfoSection("संपर्क", "फोन: 9922884976 / 7774013110"),
+            "सुपरमार्केट\n रोड, शिवशक्ती चौक"),
+        InfoSection("संपर्क", "फोन: 0000884976 / 777400000"),
         InfoSection("दुकानाची वेळ", "सकाळी 9:00 ते रात्री 10:00 (सातही दिवस)"),
         InfoSection("Delivery क्षेत्र",
             "सध्या दुकानाच्या जवळच्या भागात home delivery उपलब्ध आहे."),
@@ -88,7 +88,7 @@ class HelpSupportScreen extends StatelessWidget {
       sections: [
         InfoSection("मदत हवी आहे?",
             "ऑर्डर, delivery, किंवा product संबंधी कुठलीही अडचण असल्यास खाली दिलेल्या नंबरवर कॉल करा."),
-        InfoSection("संपर्क", "फोन: 9922884976 / 7774013110\nवेळ: सकाळी 9 ते रात्री 10"),
+        InfoSection("संपर्क", "फोन: 209000 / 00013110\nवेळ: सकाळी 9 ते रात्री 10"),
         InfoSection("वारंवार विचारले जाणारे प्रश्न",
             "• ऑर्डर किती वेळात पोहोचते? — साधारण 30-60 मिनिटांत\n• Payment कसं करायचं? — सध्या फक्त Cash on Delivery उपलब्ध आहे\n• ऑर्डर रद्द कशी करायची? — वरील नंबरवर कॉल करून सांगा"),
       ],
