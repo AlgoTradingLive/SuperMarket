@@ -65,7 +65,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: const Color(0xFF0B6E4F),
+        backgroundColor: const Color(0xFF1565C0),
         title: const Text("Delivery Details"),
       ),
       body: Padding(
@@ -95,7 +95,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
             const SizedBox(height: 16),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF0B6E4F),
+                backgroundColor: const Color(0xFF1565C0),
                 padding: const EdgeInsets.symmetric(vertical: 14),
               ),
               onPressed: placing ? null : _placeOrder,

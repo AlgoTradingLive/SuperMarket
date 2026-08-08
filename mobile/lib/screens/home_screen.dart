@@ -105,7 +105,7 @@ class _HomeScreenState extends State<HomeScreen> {
       backgroundColor: const Color(0xFFF5F6F8),
       drawer: AppDrawer(cart: cart, onChangeQty: _changeQty),
       appBar: AppBar(
-        backgroundColor: const Color(0xFF0B6E4F),
+        backgroundColor: const Color(0xFF1565C0),
         title: Row(
           children: [
             ClipRRect(
@@ -172,7 +172,7 @@ class _HomeScreenState extends State<HomeScreen> {
             // Delivery address bar
             Container(
               width: double.infinity,
-              color: const Color(0xFF0B6E4F),
+              color: const Color(0xFF1565C0),
               padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
               child: Row(
                 children: [
@@ -238,7 +238,7 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
-        selectedItemColor: const Color(0xFF0B6E4F),
+        selectedItemColor: const Color(0xFF1565C0),
         unselectedItemColor: Colors.grey,
         currentIndex: 0,
         onTap: (i) async {

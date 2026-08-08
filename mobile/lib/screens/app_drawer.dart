@@ -23,7 +23,7 @@ class AppDrawer extends StatelessWidget {
           children: [
             Container(
               width: double.infinity,
-              color: const Color(0xFF0B6E4F),
+              color: const Color(0xFF1565C0),
               padding: const EdgeInsets.fromLTRB(20, 20, 20, 20),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -92,7 +92,7 @@ class AppDrawer extends StatelessWidget {
 
   Widget _tile(BuildContext context, IconData icon, String title, VoidCallback onTap) {
     return ListTile(
-      leading: Icon(icon, color: const Color(0xFF0B6E4F)),
+      leading: Icon(icon, color: const Color(0xFF1565C0)),
       title: Text(title),
       trailing: const Icon(Icons.chevron_right, size: 18),
       onTap: onTap,

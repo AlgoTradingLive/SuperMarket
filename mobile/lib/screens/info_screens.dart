@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class InfoSection {
   final String heading;
   final String body;
- const InfoSection(this.heading, this.body);
+  InfoSection(this.heading, this.body);
 }
 
 class StaticInfoScreen extends StatelessWidget {
@@ -17,7 +17,7 @@ class StaticInfoScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: const Color(0xFFF5F6F8),
       appBar: AppBar(
-        backgroundColor: const Color(0xFF0B6E4F),
+        backgroundColor: const Color(0xFF1565C0),
         title: Text(title),
       ),
       body: ListView(

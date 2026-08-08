@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../models/product.dart';
 import '../services/api_service.dart';
+import '../services/wishlist_store.dart';
 
 class ProductsScreen extends StatefulWidget {
   final String title;
@@ -64,7 +65,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
     return Scaffold(
       backgroundColor: const Color(0xFFF5F6F8),
       appBar: AppBar(
-        backgroundColor: const Color(0xFF0B6E4F),
+        backgroundColor: const Color(0xFF1565C0),
         title: Text(widget.title),
       ),
       body: _buildBody(),
@@ -115,33 +116,77 @@ class _ProductsScreenState extends State<ProductsScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              ClipRRect(
-                borderRadius: BorderRadius.circular(8),
-                child: Image.network(
-                  p.image,
-                  height: 110,
-                  width: double.infinity,
-                  fit: BoxFit.cover,
-                  loadingBuilder: (context, child, progress) {
-                    if (progress == null) return child;
-                    return Container(
+              Stack(
+                children: [
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(8),
+                    child: Image.network(
+                      p.image,
                       height: 110,
-                      color: Colors.grey.shade100,
-                      child: const Center(
-                        child: SizedBox(
-                          height: 20,
-                          width: 20,
-                          child: CircularProgressIndicator(strokeWidth: 2),
+                      width: double.infinity,
+                      fit: BoxFit.cover,
+                      loadingBuilder: (context, child, progress) {
+                        if (progress == null) return child;
+                        return Container(
+                          height: 110,
+                          color: Colors.grey.shade100,
+                          child: const Center(
+                            child: SizedBox(
+                              height: 20,
+                              width: 20,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            ),
+                          ),
+                        );
+                      },
+                      errorBuilder: (_, __, ___) => Container(
+                        height: 110,
+                        color: Colors.grey.shade200,
+                        child: const Icon(Icons.image_not_supported_outlined),
+                      ),
+                    ),
+                  ),
+                  if (p.discountPercent > 0)
+                    Positioned(
+                      top: 6,
+                      left: 6,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                        decoration: BoxDecoration(
+                          color: Colors.red,
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                        child: Text(
+                          "${p.discountPercent}% OFF",
+                          style: const TextStyle(
+                              color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
                         ),
                       ),
-                    );
-                  },
-                  errorBuilder: (_, __, ___) => Container(
-                    height: 110,
-                    color: Colors.grey.shade200,
-                    child: const Icon(Icons.image_not_supported_outlined),
+                    ),
+                  Positioned(
+                    top: 2,
+                    right: 2,
+                    child: InkWell(
+                      onTap: () => setState(() => WishlistStore.toggle(p.id)),
+                      child: Container(
+                        padding: const EdgeInsets.all(4),
+                        decoration: const BoxDecoration(
+                          color: Colors.white,
+                          shape: BoxShape.circle,
+                        ),
+                        child: Icon(
+                          WishlistStore.isWishlisted(p.id)
+                              ? Icons.favorite
+                              : Icons.favorite_border,
+                          size: 16,
+                          color: WishlistStore.isWishlisted(p.id)
+                              ? Colors.red
+                              : Colors.grey,
+                        ),
+                      ),
+                    ),
                   ),
-                ),
+                ],
               ),
               const SizedBox(height: 6),
               Text(p.name,
@@ -170,7 +215,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
                       width: double.infinity,
                       child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF0B6E4F),
+                          backgroundColor: const Color(0xFF1565C0),
                           padding: const EdgeInsets.symmetric(vertical: 8),
                         ),
                         onPressed: () => setState(() => widget.onChangeQty(p, 1)),
@@ -179,7 +224,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
                     )
                   : Container(
                       decoration: BoxDecoration(
-                        color: const Color(0xFF0B6E4F),
+                        color: const Color(0xFF1565C0),
                         borderRadius: BorderRadius.circular(6),
                       ),
                       child: Row(
@@ -196,7 +241,9 @@ class _ProductsScreenState extends State<ProductsScreen> {
                             iconSize: 18,
                             color: Colors.white,
                             icon: const Icon(Icons.add),
-                            onPressed: () => setState(() => widget.onChangeQty(p, 1)),
+                            onPressed: qty >= 10
+                                ? null
+                                : () => setState(() => widget.onChangeQty(p, 1)),
                           ),
                         ],
                       ),

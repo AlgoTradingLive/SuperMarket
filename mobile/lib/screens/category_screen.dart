@@ -65,7 +65,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: const Color(0xFF0B6E4F),
+        backgroundColor: const Color(0xFF1565C0),
         title: const Text("SHOP BY CATEGORY"),
       ),
       body: _buildBody(),
@@ -116,7 +116,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
                       Container(
                         decoration: BoxDecoration(
                           border: active
-                              ? Border.all(color: const Color(0xFF0B6E4F), width: 2)
+                              ? Border.all(color: const Color(0xFF1565C0), width: 2)
                               : null,
                           borderRadius: BorderRadius.circular(8),
                         ),
@@ -145,7 +145,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
                         style: TextStyle(
                           fontSize: 10,
                           fontWeight: active ? FontWeight.bold : FontWeight.normal,
-                          color: active ? const Color(0xFF0B6E4F) : Colors.black87,
+                          color: active ? const Color(0xFF1565C0) : Colors.black87,
                         ),
                       ),
                     ],
@@ -166,14 +166,14 @@ class _CategoryScreenState extends State<CategoryScreen> {
                       width: double.infinity,
                       padding: const EdgeInsets.symmetric(vertical: 14),
                       decoration: BoxDecoration(
-                        color: const Color(0xFFE8F5EE),
+                        color: const Color(0xFFE3F2FD),
                         borderRadius: BorderRadius.circular(30),
                       ),
                       child: Text(
                         selectedSection!,
                         textAlign: TextAlign.center,
                         style: const TextStyle(
-                            color: Color(0xFF0B6E4F),
+                            color: Color(0xFF1565C0),
                             fontWeight: FontWeight.bold,
                             fontSize: 16),
                       ),
