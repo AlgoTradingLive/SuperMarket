@@ -43,6 +43,15 @@ jobs:
           sed -i 's/applicationId = "com.supermarket.build_project"/applicationId = "com.supermarket.app"/' build_project/android/app/build.gradle
           sed -i 's/namespace = "com.supermarket.build_project"/namespace = "com.supermarket.app"/' build_project/android/app/build.gradle
 
+      - name: Move MainActivity to new package folder
+        run: |
+          OLD_DIR="build_project/android/app/src/main/kotlin/com/supermarket/build_project"
+          NEW_DIR="build_project/android/app/src/main/kotlin/com/supermarket/app"
+          mkdir -p "$NEW_DIR"
+          find "build_project/android/app/src/main" -name "MainActivity.kt" -exec mv {} "$NEW_DIR/MainActivity.kt" \;
+          sed -i 's/package com.supermarket.build_project/package com.supermarket.app/' "$NEW_DIR/MainActivity.kt"
+          rm -rf "$OLD_DIR"
+
       - name: Get dependencies
         working-directory: build_project
         run: flutter pub get
