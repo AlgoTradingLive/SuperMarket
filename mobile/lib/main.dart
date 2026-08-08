@@ -14,9 +14,9 @@ class QuickMartApp extends StatelessWidget {
       title: 'कांकरीया सुपरमार्केट',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        primaryColor: const Color(0xFF1565C0),
+        primaryColor: const Color(0xFF2E7D32),
         colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xFF1565C0),
+          seedColor: const Color(0xFF2E7D32),
         ),
         useMaterial3: true,
       ),
