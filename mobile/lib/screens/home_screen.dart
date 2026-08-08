@@ -109,6 +109,7 @@ class _HomeScreenState extends State<HomeScreen> {
       drawer: AppDrawer(cart: cart, onChangeQty: _changeQty),
       appBar: AppBar(
         backgroundColor: kBrandGreen,
+        foregroundColor: Colors.white,
         title: Image.asset(
           'assets/logo.png',
           height: 40,

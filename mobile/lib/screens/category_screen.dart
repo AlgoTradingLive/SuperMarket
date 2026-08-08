@@ -4,6 +4,9 @@ import '../models/subcategory.dart';
 import '../services/api_service.dart';
 import 'products_screen.dart';
 
+const kBrandGreen = Color(0xFF2E7D32);
+const kBrandGreenLight = Color(0xFFE8F5E9);
+
 class CategoryScreen extends StatefulWidget {
   final Map<int, CartItem> cart;
   final void Function(Product product, int delta) onChangeQty;
@@ -65,7 +68,8 @@ class _CategoryScreenState extends State<CategoryScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: const Color(0xFF1565C0),
+        backgroundColor: kBrandGreen,
+        foregroundColor: Colors.white,
         title: const Text("SHOP BY CATEGORY"),
       ),
       body: _buildBody(),
@@ -116,7 +120,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
                       Container(
                         decoration: BoxDecoration(
                           border: active
-                              ? Border.all(color: const Color(0xFF1565C0), width: 2)
+                              ? Border.all(color: kBrandGreen, width: 2)
                               : null,
                           borderRadius: BorderRadius.circular(8),
                         ),
@@ -145,7 +149,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
                         style: TextStyle(
                           fontSize: 10,
                           fontWeight: active ? FontWeight.bold : FontWeight.normal,
-                          color: active ? const Color(0xFF1565C0) : Colors.black87,
+                          color: active ? kBrandGreen : Colors.black87,
                         ),
                       ),
                     ],
@@ -166,14 +170,14 @@ class _CategoryScreenState extends State<CategoryScreen> {
                       width: double.infinity,
                       padding: const EdgeInsets.symmetric(vertical: 14),
                       decoration: BoxDecoration(
-                        color: const Color(0xFFE3F2FD),
+                        color: kBrandGreenLight,
                         borderRadius: BorderRadius.circular(30),
                       ),
                       child: Text(
                         selectedSection!,
                         textAlign: TextAlign.center,
                         style: const TextStyle(
-                            color: Color(0xFF1565C0),
+                            color: kBrandGreen,
                             fontWeight: FontWeight.bold,
                             fontSize: 16),
                       ),

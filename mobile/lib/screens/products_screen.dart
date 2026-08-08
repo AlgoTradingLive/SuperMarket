@@ -4,6 +4,8 @@ import '../services/api_service.dart';
 import '../services/wishlist_store.dart';
 import 'cart_screen.dart';
 
+const kBrandGreen = Color(0xFF2E7D32);
+
 class ProductsScreen extends StatefulWidget {
   final String title;
   final String? section;
@@ -66,7 +68,8 @@ class _ProductsScreenState extends State<ProductsScreen> {
     return Scaffold(
       backgroundColor: const Color(0xFFF5F6F8),
       appBar: AppBar(
-        backgroundColor: const Color(0xFF1565C0),
+        backgroundColor: kBrandGreen,
+        foregroundColor: Colors.white,
         title: Text(widget.title),
       ),
       body: _buildBody(),
@@ -90,7 +93,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
         margin: const EdgeInsets.fromLTRB(12, 0, 12, 12),
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
         decoration: BoxDecoration(
-          color: const Color(0xFF1565C0),
+          color: kBrandGreen,
           borderRadius: BorderRadius.circular(10),
         ),
         child: Row(
@@ -149,8 +152,8 @@ class _ProductsScreenState extends State<ProductsScreen> {
               child: const Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text("CART", style: TextStyle(color: Color(0xFF1565C0), fontWeight: FontWeight.bold)),
-                  Icon(Icons.chevron_right, color: Color(0xFF1565C0), size: 18),
+                  Text("CART", style: TextStyle(color: kBrandGreen, fontWeight: FontWeight.bold)),
+                  Icon(Icons.chevron_right, color: kBrandGreen, size: 18),
                 ],
               ),
             ),
@@ -303,7 +306,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
                       width: double.infinity,
                       child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF1565C0),
+                          backgroundColor: kBrandGreen,
                           padding: const EdgeInsets.symmetric(vertical: 8),
                         ),
                         onPressed: () => setState(() => widget.onChangeQty(p, 1)),
@@ -312,7 +315,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
                     )
                   : Container(
                       decoration: BoxDecoration(
-                        color: const Color(0xFF1565C0),
+                        color: kBrandGreen,
                         borderRadius: BorderRadius.circular(6),
                       ),
                       child: Row(
