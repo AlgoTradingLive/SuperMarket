@@ -25,10 +25,14 @@ jobs:
 
       - name: Update Target SDK to 35
         run: |
+          sed -i "s/compileSdk = flutter.compileSdkVersion/compileSdk = 35/" build_project/android/app/build.gradle
+          sed -i "s/targetSdk = flutter.targetSdkVersion/targetSdk = 35/" build_project/android/app/build.gradle
           sed -i "s/targetSdkVersion flutter.targetSdkVersion/targetSdkVersion 35/" build_project/android/app/build.gradle
           sed -i "s/compileSdk flutter.compileSdkVersion/compileSdk 35/" build_project/android/app/build.gradle
           sed -i 's/targetSdkVersion 34/targetSdkVersion 35/g' build_project/android/app/build.gradle
           sed -i 's/compileSdk 34/compileSdk 35/g' build_project/android/app/build.gradle
+          echo "--- build.gradle मधले SDK संबंधी ओळी ---"
+          grep -n -i "sdk" build_project/android/app/build.gradle
 
       - name: Copy our app code into scaffold
         run: |
