@@ -84,8 +84,10 @@ class _ProductsScreenState extends State<ProductsScreen> {
         0, (sum, c) => sum + (c.product.mrp - c.product.price) * c.qty);
 
     return SafeArea(
+      top: false,
       child: Container(
-        margin: const EdgeInsets.all(12),
+        height: 68,
+        margin: const EdgeInsets.fromLTRB(12, 0, 12, 12),
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
         decoration: BoxDecoration(
           color: const Color(0xFF1565C0),
@@ -115,6 +117,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
             const SizedBox(width: 14),
             Expanded(
               child: Column(
+                mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text("₹$totalPrice Cart Total",
@@ -144,6 +147,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
                 setState(() {});
               },
               child: const Row(
+                mainAxisSize: MainAxisSize.min,
                 children: [
                   Text("CART", style: TextStyle(color: Color(0xFF1565C0), fontWeight: FontWeight.bold)),
                   Icon(Icons.chevron_right, color: Color(0xFF1565C0), size: 18),
