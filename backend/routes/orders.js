@@ -20,6 +20,7 @@ async function notifyTelegram(order) {
 ━━━━━━━━━━━━━━━━
 🆔 Order #${order.id}
 🕒 ${orderTime}
+🏬 <b>Store:</b> ${order.storeName || "Not selected"}
 
 👤 <b>Customer</b>
 ${order.customerName}
@@ -81,7 +82,7 @@ function writeOrders(orders) {
 
 // POST /api/orders  -> place a new order (mock checkout, no real payment)
 router.post("/", (req, res) => {
-  const { items, customerName, address, phone } = req.body;
+  const { items, customerName, address, phone, storeId, storeName } = req.body;
 
   if (!items || items.length === 0) {
     return res.status(400).json({ error: "Cart is empty" });
@@ -98,6 +99,8 @@ router.post("/", (req, res) => {
     customerName,
     address,
     phone,
+    storeId: storeId || null,
+    storeName: storeName || null,
     total,
     status: "Placed",
     createdAt: new Date().toISOString(),
