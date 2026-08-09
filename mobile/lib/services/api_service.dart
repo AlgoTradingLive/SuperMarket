@@ -46,6 +46,8 @@ class ApiService {
     required String customerName,
     required String phone,
     required String address,
+    int? storeId,
+    String? storeName,
   }) async {
     final uri = Uri.parse("$baseUrl/orders");
     final body = jsonEncode({
@@ -60,6 +62,8 @@ class ApiService {
       "customerName": customerName,
       "phone": phone,
       "address": address,
+      "storeId": storeId,
+      "storeName": storeName,
     });
 
     final res = await http
