@@ -24,15 +24,15 @@ jobs:
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
         with:
-          packages: "platforms;android-35 build-tools;35.0.0"
+          packages: "platforms;android-36 build-tools;36.0.0"
 
       - name: Verify android.jar and re-install if corrupt
         run: |
-          JAR="$ANDROID_HOME/platforms/android-35/android.jar"
+          JAR="$ANDROID_HOME/platforms/android-36/android.jar"
           if [ ! -f "$JAR" ] || ! unzip -tq "$JAR" > /dev/null 2>&1; then
             echo "android.jar missing or corrupt, re-installing platform..."
-            yes | sdkmanager --uninstall "platforms;android-35" || true
-            yes | sdkmanager "platforms;android-35"
+            yes | sdkmanager --uninstall "platforms;android-36" || true
+            yes | sdkmanager "platforms;android-36"
           else
             echo "android.jar looks fine."
           fi
@@ -45,14 +45,14 @@ jobs:
           sed -i -E 's/(id\s+"org\.jetbrains\.kotlin\.android"\s+version\s+")[^"]*(")/\11.9.22\2/' build_project/android/settings.gradle
           cat build_project/android/settings.gradle | grep kotlin
 
-      - name: Update Target SDK to 35
+      - name: Update Target SDK to 36
         run: |
-          sed -i "s/compileSdk = flutter.compileSdkVersion/compileSdk = 35/" build_project/android/app/build.gradle
-          sed -i "s/targetSdk = flutter.targetSdkVersion/targetSdk = 35/" build_project/android/app/build.gradle
-          sed -i "s/targetSdkVersion flutter.targetSdkVersion/targetSdkVersion 35/" build_project/android/app/build.gradle
-          sed -i "s/compileSdk flutter.compileSdkVersion/compileSdk 35/" build_project/android/app/build.gradle
-          sed -i 's/targetSdkVersion 34/targetSdkVersion 35/g' build_project/android/app/build.gradle
-          sed -i 's/compileSdk 34/compileSdk 35/g' build_project/android/app/build.gradle
+          sed -i "s/compileSdk = flutter.compileSdkVersion/compileSdk = 36/" build_project/android/app/build.gradle
+          sed -i "s/targetSdk = flutter.targetSdkVersion/targetSdk = 36/" build_project/android/app/build.gradle
+          sed -i "s/targetSdkVersion flutter.targetSdkVersion/targetSdkVersion 36/" build_project/android/app/build.gradle
+          sed -i "s/compileSdk flutter.compileSdkVersion/compileSdk 36/" build_project/android/app/build.gradle
+          sed -i 's/targetSdkVersion 3[45]/targetSdkVersion 36/g' build_project/android/app/build.gradle
+          sed -i 's/compileSdk 3[45]/compileSdk 36/g' build_project/android/app/build.gradle
           echo "--- build.gradle मधले SDK संबंधी ओळी ---"
           grep -n -i "sdk" build_project/android/app/build.gradle
 
@@ -89,10 +89,10 @@ jobs:
         working-directory: build_project
         run: flutter pub get
 
-      - name: Fix aapt2 for Android 35 (AGP/aapt2 mismatch)
+      - name: Fix aapt2 for Android 36 (AGP/aapt2 mismatch)
         working-directory: build_project
         run: |
-          echo "android.aapt2FromMavenOverride=$ANDROID_HOME/build-tools/35.0.0/aapt2" >> android/gradle.properties
+          echo "android.aapt2FromMavenOverride=$ANDROID_HOME/build-tools/36.0.0/aapt2" >> android/gradle.properties
           cat android/gradle.properties
 
       - name: Generate app icon
