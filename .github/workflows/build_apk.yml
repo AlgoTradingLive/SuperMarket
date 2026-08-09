@@ -40,6 +40,11 @@ jobs:
       - name: Create fresh Flutter Android scaffold
         run: flutter create --platforms=android --org com.algotradinglive build_project
 
+      - name: Bump Kotlin version for plugin compatibility
+        run: |
+          sed -i -E 's/(id\s+"org\.jetbrains\.kotlin\.android"\s+version\s+")[^"]*(")/\11.9.22\2/' build_project/android/settings.gradle
+          cat build_project/android/settings.gradle | grep kotlin
+
       - name: Update Target SDK to 35
         run: |
           sed -i "s/compileSdk = flutter.compileSdkVersion/compileSdk = 35/" build_project/android/app/build.gradle
