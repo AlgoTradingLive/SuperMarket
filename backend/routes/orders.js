@@ -53,6 +53,23 @@ const path = require("path");
 const router = express.Router();
 const ORDERS_FILE = path.join(__dirname, "..", "data", "orders.json");
 
+// Auto status progression thresholds (minutes since order placed)
+const STATUS_STEPS = [
+  { minutes: 0, status: "Placed" },
+  { minutes: 2, status: "Packed" },
+  { minutes: 8, status: "Out for Delivery" },
+  { minutes: 20, status: "Delivered" },
+];
+
+function computeLiveStatus(order) {
+  const elapsedMin = (Date.now() - new Date(order.createdAt).getTime()) / 60000;
+  let status = STATUS_STEPS[0].status;
+  for (const step of STATUS_STEPS) {
+    if (elapsedMin >= step.minutes) status = step.status;
+  }
+  return { ...order, status };
+}
+
 function readOrders() {
   if (!fs.existsSync(ORDERS_FILE)) return [];
   return JSON.parse(fs.readFileSync(ORDERS_FILE, "utf-8"));
@@ -91,12 +108,24 @@ router.post("/", (req, res) => {
   writeOrders(orders);
   notifyTelegram(order);
 
-  res.status(201).json({ message: "Order placed successfully", order });
+  res.status(201).json({ message: "Order placed successfully", order: computeLiveStatus(order) });
 });
 
-// GET /api/orders  -> list all orders (for a simple admin view)
+// GET /api/orders?phone=xxxxxxxxxx  -> list orders (optionally filtered by phone) with live status
 router.get("/", (req, res) => {
-  res.json(readOrders());
+  const { phone } = req.query;
+  let orders = readOrders();
+  if (phone) orders = orders.filter(o => o.phone === phone);
+  orders = orders.map(computeLiveStatus).sort((a, b) => b.id - a.id);
+  res.json(orders);
+});
+
+// GET /api/orders/:id  -> single order with live status (for tracking screen)
+router.get("/:id", (req, res) => {
+  const orders = readOrders();
+  const order = orders.find(o => String(o.id) === req.params.id);
+  if (!order) return res.status(404).json({ error: "Order not found" });
+  res.json(computeLiveStatus(order));
 });
 
 module.exports = router;
