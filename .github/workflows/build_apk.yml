@@ -5,6 +5,9 @@ on:
     branches: [ main ]
   workflow_dispatch: {}
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -150,14 +153,11 @@ jobs:
         working-directory: build_project
         run: flutter build appbundle --release
 
-      - name: Upload APK as artifact
-        uses: actions/upload-artifact@v4
+      - name: Create GitHub Release with APK & AAB
+        uses: softprops/action-gh-release@v2
         with:
-          name: app-release-apk
-          path: build_project/build/app/outputs/flutter-apk/app-release.apk
-
-      - name: Upload AAB as artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: app-release-aab
-          path: build_project/build/app/outputs/bundle/release/app-release.aab
+          tag_name: v1.0.${{ github.run_number }}
+          name: SuperMarket Build ${{ github.run_number }}
+          files: |
+            build_project/build/app/outputs/flutter-apk/app-release.apk
+            build_project/build/app/outputs/bundle/release/app-release.aab
