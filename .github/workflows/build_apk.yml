@@ -81,6 +81,12 @@ jobs:
         working-directory: build_project
         run: flutter pub get
 
+      - name: Fix aapt2 for Android 35 (AGP/aapt2 mismatch)
+        working-directory: build_project
+        run: |
+          echo "android.aapt2FromMavenOverride=$ANDROID_HOME/build-tools/35.0.0/aapt2" >> android/gradle.properties
+          cat android/gradle.properties
+
       - name: Generate app icon
         working-directory: build_project
         run: flutter pub run flutter_launcher_icons
