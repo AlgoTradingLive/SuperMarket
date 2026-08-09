@@ -190,11 +190,23 @@ function renderManage() {
         <div class="meta">₹${p.price} (MRP ₹${p.mrp}) • ${p.unit}</div>
         <div class="row-actions">
           <button class="secondary" onclick="editPrice(${p.id})">Edit Price</button>
+          <button class="secondary" onclick="editImage(${p.id})">Edit Photo</button>
           <button class="danger" onclick="deleteProduct(${p.id})">Delete</button>
         </div>
       </div>
     </div>
   `).join('');
+}
+
+function editImage(id) {
+  const p = allProducts.find(x => x.id === id);
+  const url = prompt("नवीन फोटो लिंक (Image URL) पेस्ट करा:\n\nAmazon/Flipkart वर तो प्रॉडक्ट शोधा → फोटोवर right-click → 'Copy image address'", p.image);
+  if (url === null || url.trim() === "") return;
+  fetch(API + "/admin/products/" + id, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json", "x-admin-key": adminKey },
+    body: JSON.stringify({ image: url.trim() })
+  }).then(() => { setTimeout(() => { loadProducts(); setTimeout(renderManage, 400); }, 300); });
 }
 
 function editPrice(id) {
@@ -207,8 +219,7 @@ function editPrice(id) {
     method: "PUT",
     headers: { "Content-Type": "application/json", "x-admin-key": adminKey },
     body: JSON.stringify({ price: Number(price), mrp: Number(mrp) })
-  }).then(() => loadProducts().then ? null : setTimeout(loadProducts, 300));
-  setTimeout(loadProducts, 300);
+  }).then(() => { setTimeout(() => { loadProducts(); setTimeout(renderManage, 400); }, 300); });
 }
 
 function deleteProduct(id) {
