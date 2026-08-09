@@ -63,9 +63,9 @@ jobs:
           mkdir -p build_project/assets
           cp -r mobile/assets/. build_project/assets/
 
-      - name: Add INTERNET permission
+      - name: Add INTERNET and Location permissions
         run: |
-          sed -i 's#<application#<uses-permission android:name="android.permission.INTERNET"/>\n    <application#' build_project/android/app/src/main/AndroidManifest.xml
+          sed -i 's#<application#<uses-permission android:name="android.permission.INTERNET"/>\n    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>\n    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>\n    <application#' build_project/android/app/src/main/AndroidManifest.xml
 
       - name: Set app name (label)
         run: |
