@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="mr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SuperMarket Admin</title>
+<style>
+  * { box-sizing: border-box; }
+  body { font-family: Arial, sans-serif; margin: 0; background: #F5F6F8; color: #222; }
+  header { background: #2E7D32; color: white; padding: 16px; font-size: 20px; font-weight: bold; position: sticky; top: 0; z-index: 10; }
+  .tabs { display: flex; background: white; border-bottom: 1px solid #ddd; }
+  .tab { flex: 1; text-align: center; padding: 12px; cursor: pointer; font-weight: bold; color: #666; }
+  .tab.active { color: #2E7D32; border-bottom: 3px solid #2E7D32; }
+  .container { padding: 14px; max-width: 900px; margin: 0 auto; }
+  input, select { width: 100%; padding: 10px; margin: 6px 0; border: 1px solid #ccc; border-radius: 6px; font-size: 14px; }
+  button { background: #2E7D32; color: white; border: none; padding: 10px 16px; border-radius: 6px; font-weight: bold; cursor: pointer; }
+  button.secondary { background: #999; }
+  button.danger { background: #d32f2f; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; margin-top: 14px; }
+  .card { background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+  .card img { width: 100%; height: 130px; object-fit: contain; background: #f0f0f0; }
+  .card .body { padding: 8px; }
+  .card .name { font-size: 12px; font-weight: bold; margin-bottom: 4px; height: 32px; overflow: hidden; }
+  .card .meta { font-size: 11px; color: #777; margin-bottom: 6px; }
+  .card button { width: 100%; font-size: 12px; padding: 6px; }
+  #loginBox { max-width: 320px; margin: 60px auto; background: white; padding: 24px; border-radius: 10px; text-align: center; }
+  .row-actions { display: flex; gap: 6px; margin-top: 6px; }
+  .row-actions button { flex: 1; }
+  #addModal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 20; align-items: center; justify-content: center; }
+  #addModal .box { background: white; padding: 20px; border-radius: 10px; width: 90%; max-width: 400px; max-height: 90vh; overflow-y: auto; }
+  .hidden { display: none !important; }
+</style>
+</head>
+<body>
+
+<div id="loginBox">
+  <h3>Admin Login</h3>
+  <input id="adminKeyInput" type="password" placeholder="Admin key">
+  <button onclick="login()" style="width:100%">Enter</button>
+</div>
+
+<div id="app" class="hidden">
+  <header>🛒 SuperMarket Admin</header>
+  <div class="tabs">
+    <div class="tab active" onclick="switchTab('search')">Search &amp; Add</div>
+    <div class="tab" onclick="switchTab('manage')">Manage Products</div>
+  </div>
+
+  <div class="container">
+    <div id="searchTab">
+      <input id="searchInput" placeholder="उदा. Everest, MDH, Amul, Cadbury..." onkeydown="if(event.key==='Enter') doSearch()">
+      <button onclick="doSearch()">Search Open Food Facts</button>
+      <div id="searchResults" class="grid"></div>
+    </div>
+
+    <div id="manageTab" class="hidden">
+      <input id="filterInput" placeholder="नावाने filter करा..." oninput="renderManage()">
+      <div id="manageList" class="grid"></div>
+    </div>
+  </div>
+</div>
+
+<div id="addModal">
+  <div class="box">
+    <h3>Product Add करा</h3>
+    <img id="modalImg" src="" style="width:100%;height:140px;object-fit:contain;background:#f0f0f0;border-radius:6px;">
+    <label>Name</label>
+    <input id="modalName">
+    <label>Subcategory</label>
+    <select id="modalSubcat"></select>
+    <label>Unit (उदा. 100 g, 1 kg, 500 ml)</label>
+    <input id="modalUnit">
+    <label>Price (₹) — नंतर बदलता येईल</label>
+    <input id="modalPrice" type="number" value="0">
+    <label>MRP (₹)</label>
+    <input id="modalMrp" type="number" value="0">
+    <div class="row-actions">
+      <button class="secondary" onclick="closeModal()">Cancel</button>
+      <button onclick="confirmAdd()">Add Product</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const API = location.origin + "/api";
+let adminKey = localStorage.getItem("adminKey") || "";
+let subcategories = [];
+let allProducts = [];
+let pendingItem = null;
+
+if (adminKey) { document.getElementById('adminKeyInput').value = adminKey; login(); }
+
+function login() {
+  adminKey = document.getElementById('adminKeyInput').value.trim();
+  fetch(API + "/admin/subcategories", { headers: { "x-admin-key": adminKey } })
+    .then(r => { if (!r.ok) throw new Error(); return r.json(); })
+    .then(data => {
+      subcategories = data;
+      localStorage.setItem("adminKey", adminKey);
+      document.getElementById('loginBox').classList.add('hidden');
+      document.getElementById('app').classList.remove('hidden');
+      populateSubcatDropdown();
+      loadProducts();
+    })
+    .catch(() => alert("चुकीचा admin key"));
+}
+
+function populateSubcatDropdown() {
+  const sel = document.getElementById('modalSubcat');
+  sel.innerHTML = subcategories.map(s => `<option value="${s.name}|${s.section}">${s.name} (${s.section})</option>`).join('');
+}
+
+function switchTab(tab) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  event.target.classList.add('active');
+  document.getElementById('searchTab').classList.toggle('hidden', tab !== 'search');
+  document.getElementById('manageTab').classList.toggle('hidden', tab !== 'manage');
+  if (tab === 'manage') renderManage();
+}
+
+function doSearch() {
+  const q = document.getElementById('searchInput').value.trim();
+  if (!q) return;
+  document.getElementById('searchResults').innerHTML = "Loading...";
+  fetch(API + "/admin/off-search?q=" + encodeURIComponent(q), { headers: { "x-admin-key": adminKey } })
+    .then(r => r.json())
+    .then(results => {
+      if (!results.length) {
+        document.getElementById('searchResults').innerHTML = "<p>काही सापडलं नाही.</p>";
+        return;
+      }
+      document.getElementById('searchResults').innerHTML = results.map((p, i) => `
+        <div class="card">
+          <img src="${p.image}" onerror="this.style.display='none'">
+          <div class="body">
+            <div class="name">${p.name}</div>
+            <div class="meta">${p.brand} • ${p.quantity || ''}</div>
+            <button onclick='openAddModal(${JSON.stringify(p).replace(/'/g, "&apos;")})'>+ Add</button>
+          </div>
+        </div>
+      `).join('');
+    });
+}
+
+function openAddModal(item) {
+  pendingItem = item;
+  document.getElementById('modalImg').src = item.image;
+  document.getElementById('modalName').value = item.name;
+  document.getElementById('modalUnit').value = item.quantity || '';
+  document.getElementById('modalPrice').value = 0;
+  document.getElementById('modalMrp').value = 0;
+  document.getElementById('addModal').style.display = 'flex';
+}
+function closeModal() { document.getElementById('addModal').style.display = 'none'; }
+
+function confirmAdd() {
+  const [subCategory, section] = document.getElementById('modalSubcat').value.split('|');
+  const body = {
+    name: document.getElementById('modalName').value,
+    subCategory, section,
+    unit: document.getElementById('modalUnit').value,
+    price: document.getElementById('modalPrice').value,
+    mrp: document.getElementById('modalMrp').value,
+    image: pendingItem.image,
+  };
+  fetch(API + "/admin/products", {
+    method: "POST",
+    headers: { "Content-Type": "application/json", "x-admin-key": adminKey },
+    body: JSON.stringify(body)
+  }).then(r => r.json()).then(() => {
+    closeModal();
+    alert("Product added!");
+    loadProducts();
+  });
+}
+
+function loadProducts() {
+  fetch(API + "/admin/products", { headers: { "x-admin-key": adminKey } })
+    .then(r => r.json()).then(data => { allProducts = data; });
+}
+
+function renderManage() {
+  const filter = document.getElementById('filterInput').value.toLowerCase();
+  const filtered = allProducts.filter(p => p.name.toLowerCase().includes(filter));
+  document.getElementById('manageList').innerHTML = filtered.map(p => `
+    <div class="card">
+      <img src="${p.image}" onerror="this.style.display='none'">
+      <div class="body">
+        <div class="name">${p.name}</div>
+        <div class="meta">₹${p.price} (MRP ₹${p.mrp}) • ${p.unit}</div>
+        <div class="row-actions">
+          <button class="secondary" onclick="editPrice(${p.id})">Edit Price</button>
+          <button class="danger" onclick="deleteProduct(${p.id})">Delete</button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function editPrice(id) {
+  const p = allProducts.find(x => x.id === id);
+  const price = prompt("नवीन Price:", p.price);
+  if (price === null) return;
+  const mrp = prompt("नवीन MRP:", p.mrp);
+  if (mrp === null) return;
+  fetch(API + "/admin/products/" + id, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json", "x-admin-key": adminKey },
+    body: JSON.stringify({ price: Number(price), mrp: Number(mrp) })
+  }).then(() => loadProducts().then ? null : setTimeout(loadProducts, 300));
+  setTimeout(loadProducts, 300);
+}
+
+function deleteProduct(id) {
+  if (!confirm("खरंच delete करायचं?")) return;
+  fetch(API + "/admin/products/" + id, {
+    method: "DELETE",
+    headers: { "x-admin-key": adminKey }
+  }).then(() => setTimeout(loadProducts, 300));
+  setTimeout(() => { loadProducts(); setTimeout(renderManage, 400); }, 400);
+}
+</script>
+</body>
+</html>
