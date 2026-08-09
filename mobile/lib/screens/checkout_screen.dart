@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/product.dart';
+import '../models/store.dart';
 import '../services/api_service.dart';
+import 'store_select_screen.dart';
 
 const kBrandGreen = Color(0xFF2E7D32);
 
@@ -20,11 +22,24 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   final phoneCtrl = TextEditingController();
   final addressCtrl = TextEditingController();
   bool placing = false;
+  Store? selectedStore;
+
+  Future<void> _pickStore() async {
+    final result = await Navigator.push<Store>(
+      context,
+      MaterialPageRoute(
+          builder: (_) => StoreSelectScreen(selected: selectedStore)),
+    );
+    if (result != null) {
+      setState(() => selectedStore = result);
+    }
+  }
 
   @override
   void initState() {
     super.initState();
     _loadSavedDetails();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _pickStore());
   }
 
   Future<void> _loadSavedDetails() async {
@@ -50,6 +65,11 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
           .showSnackBar(const SnackBar(content: Text("कृपया सर्व माहिती भरा")));
       return;
     }
+    if (selectedStore == null) {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(const SnackBar(content: Text("कृपया Store निवडा")));
+      return;
+    }
 
     setState(() => placing = true);
     try {
@@ -58,6 +78,8 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
         customerName: nameCtrl.text.trim(),
         phone: phoneCtrl.text.trim(),
         address: addressCtrl.text.trim(),
+        storeId: selectedStore!.id,
+        storeName: selectedStore!.name,
       );
       final orderId = res['order']['id'];
       await _saveDetails();
@@ -99,6 +121,30 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+            InkWell(
+              onTap: _pickStore,
+              child: Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  border: Border.all(color: kBrandGreen),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Row(
+                  children: [
+                    const Icon(Icons.storefront, color: kBrandGreen),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Text(
+                        selectedStore?.name ?? "Store निवडा",
+                        style: const TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                    const Icon(Icons.chevron_right, color: kBrandGreen),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
             TextField(
               controller: nameCtrl,
               decoration: const InputDecoration(labelText: "Full Name", border: OutlineInputBorder()),
