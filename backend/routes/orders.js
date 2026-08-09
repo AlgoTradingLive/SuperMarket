@@ -4,13 +4,44 @@ const TELEGRAM_CHAT_ID = process.env.TELEGRAM_CHAT_ID;
 
 async function notifyTelegram(order) {
   if (!TELEGRAM_TOKEN || !TELEGRAM_CHAT_ID) return;
-  const itemsList = order.items.map(i => `• ${i.name} x${i.qty}`).join("\n");
-  const text = `🛒 नवीन ऑर्डर #${order.id}\n\n👤 ${order.customerName}\n📞 ${order.phone}\n📍 ${order.address}\n\n${itemsList}\n\n💰 Total: ₹${order.total}`;
+
+  const itemsList = order.items
+    .map(i => `${i.qty} × ${i.name} — ₹${i.price * i.qty}`)
+    .join("\n");
+
+  const orderTime = new Date(order.createdAt).toLocaleString("en-IN", {
+    timeZone: "Asia/Kolkata",
+    day: "2-digit", month: "short", year: "numeric",
+    hour: "2-digit", minute: "2-digit",
+  });
+
+  const text =
+`🛍️ <b>New Order Received</b>
+━━━━━━━━━━━━━━━━
+🆔 Order #${order.id}
+🕒 ${orderTime}
+
+👤 <b>Customer</b>
+${order.customerName}
+📞 ${order.phone}
+📍 ${order.address}
+
+🧺 <b>Items</b>
+${itemsList}
+
+━━━━━━━━━━━━━━━━
+💰 <b>Total: ₹${order.total}</b>
+💳 Payment: Cash on Delivery`;
+
   try {
     await fetch(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ chat_id: TELEGRAM_CHAT_ID, text }),
+      body: JSON.stringify({
+        chat_id: TELEGRAM_CHAT_ID,
+        text,
+        parse_mode: "HTML",
+      }),
     });
   } catch (e) {
     console.error("Telegram notify failed:", e.message);
