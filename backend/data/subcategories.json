@@ -1,22 +1,116 @@
 [
-  { "id": 1, "name": "Cereals & Millets", "section": "Grocery & Kitchen", "icon": "https://images.unsplash.com/photo-1509440159596-0249088772ff?w=200" },
-  { "id": 2, "name": "Dry Fruits & Nuts", "section": "Grocery & Kitchen", "icon": "https://images.unsplash.com/photo-1599599810769-bcde5a160d32?w=200" },
-  { "id": 3, "name": "Pulses", "section": "Grocery & Kitchen", "icon": "https://images.unsplash.com/photo-1585996950442-8036e5e5f8a5?w=200" },
-  { "id": 4, "name": "Masala & Spices", "section": "Grocery & Kitchen", "icon": "https://images.unsplash.com/photo-1596040033229-a9821ebd058d?w=200" },
-
-  { "id": 5, "name": "All Purpose Cleaners", "section": "Home Supplies", "icon": "https://images.unsplash.com/photo-1585421514738-01798e348b17?w=200" },
-  { "id": 6, "name": "Detergent & Fabric Care", "section": "Home Supplies", "icon": "https://images.unsplash.com/photo-1626806787461-102c1bfaaea1?w=200" },
-  { "id": 7, "name": "Dishwashers", "section": "Home Supplies", "icon": "https://images.unsplash.com/photo-1585421514738-01798e348b17?w=200" },
-  { "id": 8, "name": "Home Essential", "section": "Home Supplies", "icon": "https://images.unsplash.com/photo-1563453392212-326f5e854473?w=200" },
-
-  { "id": 9, "name": "Biscuits & Cookies", "section": "Snacking & Munching", "icon": "https://images.unsplash.com/photo-1499636136210-6f4ee915583e?w=200" },
-  { "id": 10, "name": "Chips & Crisps", "section": "Snacking & Munching", "icon": "https://images.unsplash.com/photo-1566478989037-eec170784d0b?w=200" },
-  { "id": 11, "name": "Chocolates Candies & Jellys", "section": "Snacking & Munching", "icon": "https://images.unsplash.com/photo-1549007994-cb92caebd54b?w=200" },
-  { "id": 12, "name": "Breakfast Cereals", "section": "Snacking & Munching", "icon": "https://images.unsplash.com/photo-1521483451396-3d0abae67daf?w=200" },
-
-  { "id": 13, "name": "Dairy", "section": "Daily Essentials", "icon": "https://images.unsplash.com/photo-1550583724-b2692b85b150?w=200" },
-  { "id": 14, "name": "Vegetables", "section": "Daily Essentials", "icon": "https://images.unsplash.com/photo-1546094096-0df4bcaaa337?w=200" },
-  { "id": 15, "name": "Fruits", "section": "Daily Essentials", "icon": "https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?w=200" },
-  { "id": 16, "name": "Personal Care", "section": "Daily Essentials", "icon": "https://images.unsplash.com/photo-1600857062241-98e5dba7f214?w=200" },
-  { "id": 17, "name": "Bakery", "section": "Daily Essentials", "icon": "https://images.unsplash.com/photo-1509440159596-0249088772ff?w=200" }
+  {
+    "id": 1,
+    "name": "Cereals & Millets",
+    "section": "Grocery & Kitchen",
+    "icon": "https://images.unsplash.com/photo-1509440159596-0249088772ff?w=200"
+  },
+  {
+    "id": 2,
+    "name": "Dry Fruits & Nuts",
+    "section": "Grocery & Kitchen",
+    "icon": "https://images.unsplash.com/photo-1599599810769-bcde5a160d32?w=200"
+  },
+  {
+    "id": 3,
+    "name": "Pulses",
+    "section": "Grocery & Kitchen",
+    "icon": "https://images.unsplash.com/photo-1585996950442-8036e5e5f8a5?w=200"
+  },
+  {
+    "id": 4,
+    "name": "Masala & Spices",
+    "section": "Grocery & Kitchen",
+    "icon": "https://images.unsplash.com/photo-1596040033229-a9821ebd058d?w=200"
+  },
+  {
+    "id": 5,
+    "name": "All Purpose Cleaners",
+    "section": "Home Supplies",
+    "icon": "https://images.unsplash.com/photo-1585421514738-01798e348b17?w=200"
+  },
+  {
+    "id": 6,
+    "name": "Detergent & Fabric Care",
+    "section": "Home Supplies",
+    "icon": "https://images.unsplash.com/photo-1626806787461-102c1bfaaea1?w=200"
+  },
+  {
+    "id": 7,
+    "name": "Dishwashers",
+    "section": "Home Supplies",
+    "icon": "https://images.unsplash.com/photo-1585421514738-01798e348b17?w=200"
+  },
+  {
+    "id": 8,
+    "name": "Home Essential",
+    "section": "Home Supplies",
+    "icon": "https://images.unsplash.com/photo-1563453392212-326f5e854473?w=200"
+  },
+  {
+    "id": 9,
+    "name": "Biscuits & Cookies",
+    "section": "Snacking & Munching",
+    "icon": "https://images.unsplash.com/photo-1499636136210-6f4ee915583e?w=200"
+  },
+  {
+    "id": 10,
+    "name": "Chips & Crisps",
+    "section": "Snacking & Munching",
+    "icon": "https://images.unsplash.com/photo-1566478989037-eec170784d0b?w=200"
+  },
+  {
+    "id": 11,
+    "name": "Chocolates Candies & Jellys",
+    "section": "Snacking & Munching",
+    "icon": "https://images.unsplash.com/photo-1549007994-cb92caebd54b?w=200"
+  },
+  {
+    "id": 12,
+    "name": "Breakfast Cereals",
+    "section": "Snacking & Munching",
+    "icon": "https://images.unsplash.com/photo-1521483451396-3d0abae67daf?w=200"
+  },
+  {
+    "id": 13,
+    "name": "Dairy",
+    "section": "Daily Essentials",
+    "icon": "https://images.unsplash.com/photo-1550583724-b2692b85b150?w=200"
+  },
+  {
+    "id": 14,
+    "name": "Vegetables",
+    "section": "Daily Essentials",
+    "icon": "https://images.unsplash.com/photo-1546094096-0df4bcaaa337?w=200"
+  },
+  {
+    "id": 15,
+    "name": "Fruits",
+    "section": "Daily Essentials",
+    "icon": "https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?w=200"
+  },
+  {
+    "id": 16,
+    "name": "Personal Care",
+    "section": "Daily Essentials",
+    "icon": "https://images.unsplash.com/photo-1600857062241-98e5dba7f214?w=200"
+  },
+  {
+    "id": 17,
+    "name": "Bakery",
+    "section": "Daily Essentials",
+    "icon": "https://images.unsplash.com/photo-1509440159596-0249088772ff?w=200"
+  },
+  {
+    "id": 18,
+    "name": "Sugar & Jaggery",
+    "section": "Grocery & Kitchen",
+    "icon": "https://images.unsplash.com/photo-1610450949065-1f2841536c88?w=200"
+  },
+  {
+    "id": 19,
+    "name": "Tea & Coffee",
+    "section": "Grocery & Kitchen",
+    "icon": "https://images.unsplash.com/photo-1594631252845-29fc4cc8cde9?w=200"
+  }
 ]
