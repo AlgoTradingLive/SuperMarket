@@ -20,6 +20,7 @@ class _StoreSelectScreenState extends State<StoreSelectScreen> {
   Store? chosen;
   Map<int, double>? distances; // storeId -> km
   String? locationError;
+  String? loadError;
   bool locating = false;
 
   @override
@@ -30,19 +31,26 @@ class _StoreSelectScreenState extends State<StoreSelectScreen> {
   }
 
   Future<void> _loadStores() async {
+    setState(() {
+      stores = null;
+      loadError = null;
+    });
     try {
       final res = await http
           .get(Uri.parse("${ApiService.baseUrl}/stores"))
-          .timeout(const Duration(seconds: 30));
+          .timeout(const Duration(seconds: 60));
       final List data = jsonDecode(res.body);
       if (!mounted) return;
       setState(() {
         stores = data.map((e) => Store.fromJson(e)).toList();
       });
       _tryLocateNearest();
-    } catch (_) {
+    } catch (e) {
       if (!mounted) return;
-      setState(() => stores = []);
+      setState(() {
+        loadError =
+            "Store list load होत नाहीये.\nथोडं थांबून पुन्हा प्रयत्न करा (free server sleep मधून उठायला ५०+ सेकंद लागू शकतात).";
+      });
     }
   }
 
@@ -100,9 +108,28 @@ class _StoreSelectScreenState extends State<StoreSelectScreen> {
         foregroundColor: Colors.white,
         title: const Text("Store निवडा"),
       ),
-      body: stores == null
-          ? const Center(child: CircularProgressIndicator())
-          : Column(
+      body: loadError != null
+          ? Center(
+              child: Padding(
+                padding: const EdgeInsets.all(24),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(loadError!, textAlign: TextAlign.center),
+                    const SizedBox(height: 16),
+                    ElevatedButton(
+                      onPressed: _loadStores,
+                      style: ElevatedButton.styleFrom(backgroundColor: kBrandGreen),
+                      child: const Text("पुन्हा प्रयत्न करा",
+                          style: TextStyle(color: Colors.white)),
+                    ),
+                  ],
+                ),
+              ),
+            )
+          : stores == null
+              ? const Center(child: CircularProgressIndicator())
+              : Column(
               children: [
                 if (locating)
                   const LinearProgressIndicator(minHeight: 2),
