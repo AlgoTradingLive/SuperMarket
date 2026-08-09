@@ -19,6 +19,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   Map<String, List<Subcategory>> sections = {};
+  List<Product> offerProducts = [];
   bool loading = true;
   String? error;
   String searchQuery = "";
@@ -44,8 +45,11 @@ class _HomeScreenState extends State<HomeScreen> {
     });
     try {
       final data = await ApiService.fetchSubcategories();
+      final allProducts = await ApiService.fetchProducts();
+      final deals = allProducts.where((p) => p.discountPercent > 0).toList();
       setState(() {
         sections = data;
+        offerProducts = deals;
         loading = false;
       });
     } catch (e) {
@@ -220,6 +224,8 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
             const SizedBox(height: 12),
+            if (offerProducts.isNotEmpty) _buildOffersBanner(),
+            const SizedBox(height: 12),
             _buildSectionsBody(),
             const SizedBox(height: 20),
           ],
@@ -255,6 +261,221 @@ class _HomeScreenState extends State<HomeScreen> {
           BottomNavigationBarItem(icon: Icon(Icons.shopping_cart), label: "Cart"),
           BottomNavigationBarItem(icon: Icon(Icons.replay), label: "Reorder"),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: "Account"),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildOffersBanner() {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 12),
+      padding: const EdgeInsets.symmetric(vertical: 14),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [Colors.orange.shade50, Colors.orange.shade100],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.orange.shade200),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 14),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  children: [
+                    Text(
+                      "🔥 Best Deals",
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w900,
+                        color: Colors.deepOrange.shade800,
+                        fontStyle: FontStyle.italic,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 10, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: Colors.deepOrange.shade700,
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: const Text(
+                        "Favorites",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                TextButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => ProductsScreen(
+                          title: "Best Deals",
+                          cart: cart,
+                          onChangeQty: _changeQty,
+                        ),
+                      ),
+                    );
+                  },
+                  style: TextButton.styleFrom(
+                    backgroundColor: Colors.white,
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                  ),
+                  child: Text("View All",
+                      style: TextStyle(
+                          color: Colors.deepOrange.shade800,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 12)),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 12),
+          SizedBox(
+            height: 230,
+            child: ListView.builder(
+              scrollDirection: Axis.horizontal,
+              padding: const EdgeInsets.symmetric(horizontal: 12),
+              itemCount: offerProducts.length,
+              itemBuilder: (_, i) {
+                final p = offerProducts[i];
+                final qty = cart[p.id]?.qty ?? 0;
+                return Container(
+                  width: 140,
+                  margin: const EdgeInsets.only(right: 10),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Stack(
+                        children: [
+                          ClipRRect(
+                            borderRadius: const BorderRadius.vertical(
+                                top: Radius.circular(12)),
+                            child: Image.network(
+                              p.image,
+                              height: 110,
+                              width: double.infinity,
+                              fit: BoxFit.cover,
+                              errorBuilder: (_, __, ___) => Container(
+                                height: 110,
+                                color: Colors.grey.shade200,
+                              ),
+                            ),
+                          ),
+                          Positioned(
+                            top: 6,
+                            left: 6,
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 6, vertical: 3),
+                              decoration: BoxDecoration(
+                                color: Colors.red,
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                              child: Text(
+                                "${p.discountPercent}% OFF",
+                                style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              p.name,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(
+                                  fontSize: 12, fontWeight: FontWeight.w600),
+                            ),
+                            const SizedBox(height: 4),
+                            Row(
+                              children: [
+                                Text("₹${p.price}",
+                                    style: const TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 13)),
+                                const SizedBox(width: 4),
+                                Text(
+                                  "₹${p.mrp}",
+                                  style: TextStyle(
+                                    fontSize: 10,
+                                    color: Colors.grey.shade500,
+                                    decoration: TextDecoration.lineThrough,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 6),
+                            SizedBox(
+                              width: double.infinity,
+                              height: 28,
+                              child: qty == 0
+                                  ? OutlinedButton(
+                                      onPressed: () => _changeQty(p, 1),
+                                      style: OutlinedButton.styleFrom(
+                                        foregroundColor: kBrandGreen,
+                                        side:
+                                            const BorderSide(color: kBrandGreen),
+                                        padding: EdgeInsets.zero,
+                                      ),
+                                      child: const Text("ADD",
+                                          style: TextStyle(fontSize: 11)),
+                                    )
+                                  : Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        InkWell(
+                                          onTap: () => _changeQty(p, -1),
+                                          child: const Icon(Icons.remove_circle,
+                                              color: kBrandGreen, size: 22),
+                                        ),
+                                        Text('$qty',
+                                            style: const TextStyle(
+                                                fontWeight: FontWeight.bold)),
+                                        InkWell(
+                                          onTap: () => _changeQty(p, 1),
+                                          child: const Icon(Icons.add_circle,
+                                              color: kBrandGreen, size: 22),
+                                        ),
+                                      ],
+                                    ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
+          ),
         ],
       ),
     );
