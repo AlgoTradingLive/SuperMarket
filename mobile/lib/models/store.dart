@@ -40,4 +40,33 @@ class Store {
   }
 
   double _deg2rad(double deg) => deg * (pi / 180);
+
+  // Hardcoded fallback — used if backend/server is unreachable so user
+  // can still manually pick a store without waiting on the API.
+  static List<Store> fallbackStores = [
+    Store(
+      id: 1,
+      name: "V-Mart - Anandvalli",
+      address:
+          "Menlo Park, Engineer Prakash Chaudhary Marg, Kale Nagar, Balawant Nagar, Anandvalli, Nashik, Maharashtra 422013",
+      latitude: 20.0121,
+      longitude: 73.7458,
+    ),
+    Store(
+      id: 2,
+      name: "V-Mart - Pathardi Phata",
+      address:
+          "WQRJ+QPW, Pandav Nagari, Pathardi Phata, Nashik, Maharashtra 422009",
+      latitude: 19.9420,
+      longitude: 73.7818,
+    ),
+    Store(
+      id: 3,
+      name: "V-Mart - Trimurti Chowk, Cidco",
+      address:
+          "Datta Mandir Chowk, near Vishal Petrol Pump, Trimurti Chowk, Cidco, Patil Nagar, Nashik, Maharashtra 422009",
+      latitude: 19.9792,
+      longitude: 73.7571,
+    ),
+  ];
 }
