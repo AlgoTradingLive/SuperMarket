@@ -3,6 +3,7 @@ import '../models/product.dart';
 import 'cart_screen.dart';
 import 'category_screen.dart';
 import 'info_screens.dart';
+import 'orders_screen.dart';
 
 const kBrandGreen = Color(0xFF2E7D32);
 
@@ -57,6 +58,9 @@ class AppDrawer extends StatelessWidget {
                   }),
                   _tile(context, Icons.shopping_cart_outlined, "View Cart", () {
                     _go(context, CartScreen(cart: cart, onChangeQty: onChangeQty));
+                  }),
+                  _tile(context, Icons.receipt_long_outlined, "My Orders", () {
+                    _go(context, const OrdersScreen());
                   }),
                   _tile(context, Icons.help_outline, "Help & Support", () {
                     _go(context, const HelpSupportScreen());
