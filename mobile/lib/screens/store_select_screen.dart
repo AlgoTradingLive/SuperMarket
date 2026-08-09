@@ -20,7 +20,7 @@ class _StoreSelectScreenState extends State<StoreSelectScreen> {
   Store? chosen;
   Map<int, double>? distances; // storeId -> km
   String? locationError;
-  String? loadError;
+  bool usingFallback = false;
   bool locating = false;
 
   @override
@@ -33,7 +33,7 @@ class _StoreSelectScreenState extends State<StoreSelectScreen> {
   Future<void> _loadStores() async {
     setState(() {
       stores = null;
-      loadError = null;
+      usingFallback = false;
     });
     try {
       final res = await http
@@ -46,11 +46,14 @@ class _StoreSelectScreenState extends State<StoreSelectScreen> {
       });
       _tryLocateNearest();
     } catch (e) {
+      // Server unreachable — fall back to hardcoded stores so the user
+      // can still manually pick without waiting on the API.
       if (!mounted) return;
       setState(() {
-        loadError =
-            "Store list load होत नाहीये.\nथोडं थांबून पुन्हा प्रयत्न करा (free server sleep मधून उठायला ५०+ सेकंद लागू शकतात).";
+        stores = Store.fallbackStores;
+        usingFallback = true;
       });
+      _tryLocateNearest();
     }
   }
 
@@ -108,29 +111,34 @@ class _StoreSelectScreenState extends State<StoreSelectScreen> {
         foregroundColor: Colors.white,
         title: const Text("Store निवडा"),
       ),
-      body: loadError != null
-          ? Center(
-              child: Padding(
-                padding: const EdgeInsets.all(24),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(loadError!, textAlign: TextAlign.center),
-                    const SizedBox(height: 16),
-                    ElevatedButton(
-                      onPressed: _loadStores,
-                      style: ElevatedButton.styleFrom(backgroundColor: kBrandGreen),
-                      child: const Text("पुन्हा प्रयत्न करा",
-                          style: TextStyle(color: Colors.white)),
-                    ),
-                  ],
-                ),
-              ),
-            )
-          : stores == null
-              ? const Center(child: CircularProgressIndicator())
-              : Column(
+      body: stores == null
+          ? const Center(child: CircularProgressIndicator())
+          : Column(
               children: [
+                if (usingFallback)
+                  Container(
+                    width: double.infinity,
+                    color: Colors.amber.shade50,
+                    padding: const EdgeInsets.all(10),
+                    child: Row(
+                      children: [
+                        const Icon(Icons.wifi_off,
+                            size: 18, color: Colors.orange),
+                        const SizedBox(width: 8),
+                        const Expanded(
+                          child: Text(
+                            "Server शी जोडता आलं नाही — खालून manually store निवडा",
+                            style: TextStyle(fontSize: 12),
+                          ),
+                        ),
+                        TextButton(
+                          onPressed: _loadStores,
+                          child: const Text("पुन्हा प्रयत्न करा",
+                              style: TextStyle(fontSize: 12)),
+                        ),
+                      ],
+                    ),
+                  ),
                 if (locating)
                   const LinearProgressIndicator(minHeight: 2),
                 if (locationError != null)
