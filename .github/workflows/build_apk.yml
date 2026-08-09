@@ -25,6 +25,17 @@ jobs:
         with:
           packages: "platforms;android-35 build-tools;35.0.0"
 
+      - name: Verify android.jar and re-install if corrupt
+        run: |
+          JAR="$ANDROID_HOME/platforms/android-35/android.jar"
+          if [ ! -f "$JAR" ] || ! unzip -tq "$JAR" > /dev/null 2>&1; then
+            echo "android.jar missing or corrupt, re-installing platform..."
+            yes | sdkmanager --uninstall "platforms;android-35" || true
+            yes | sdkmanager "platforms;android-35"
+          else
+            echo "android.jar looks fine."
+          fi
+
       - name: Create fresh Flutter Android scaffold
         run: flutter create --platforms=android --org com.algotradinglive build_project
 
