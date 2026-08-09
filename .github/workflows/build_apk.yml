@@ -20,6 +20,12 @@ jobs:
           flutter-version: '3.24.0'
           channel: 'stable'
 
+      - name: Install Android SDK Platform 35
+        run: |
+          SDKMANAGER="$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager"
+          yes | "$SDKMANAGER" --licenses > /dev/null || true
+          "$SDKMANAGER" "platforms;android-35" "build-tools;35.0.0"
+
       - name: Create fresh Flutter Android scaffold
         run: flutter create --platforms=android --org com.algotradinglive build_project
 
