@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../models/product.dart';
 import '../services/api_service.dart';
 
@@ -20,6 +21,27 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   final addressCtrl = TextEditingController();
   bool placing = false;
 
+  @override
+  void initState() {
+    super.initState();
+    _loadSavedDetails();
+  }
+
+  Future<void> _loadSavedDetails() async {
+    final prefs = await SharedPreferences.getInstance();
+    nameCtrl.text = prefs.getString('saved_name') ?? '';
+    phoneCtrl.text = prefs.getString('saved_phone') ?? '';
+    addressCtrl.text = prefs.getString('saved_address') ?? '';
+    if (mounted) setState(() {});
+  }
+
+  Future<void> _saveDetails() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('saved_name', nameCtrl.text.trim());
+    await prefs.setString('saved_phone', phoneCtrl.text.trim());
+    await prefs.setString('saved_address', addressCtrl.text.trim());
+  }
+
   Future<void> _placeOrder() async {
     if (nameCtrl.text.trim().isEmpty ||
         phoneCtrl.text.trim().isEmpty ||
@@ -38,6 +60,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
         address: addressCtrl.text.trim(),
       );
       final orderId = res['order']['id'];
+      await _saveDetails();
 
       if (!mounted) return;
       await showDialog(
