@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../models/product.dart';
 import '../models/subcategory.dart';
+import '../models/order.dart';
 
 class ApiService {
   static const String baseUrl = "https://supermarket-1f13.onrender.com/api";
@@ -70,5 +71,15 @@ class ApiService {
       return data;
     }
     throw Exception(data['error'] ?? "Order place करता आला नाही");
+  }
+
+  static Future<List<Order>> fetchMyOrders(String phone) async {
+    final uri = Uri.parse("$baseUrl/orders").replace(queryParameters: {"phone": phone});
+    final res = await http.get(uri).timeout(const Duration(seconds: 60));
+    if (res.statusCode == 200) {
+      final List data = jsonDecode(res.body);
+      return data.map((e) => Order.fromJson(e)).toList();
+    }
+    throw Exception("Orders load करता आले नाहीत");
   }
 }
