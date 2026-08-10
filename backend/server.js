@@ -27,6 +27,17 @@ app.get("/admin", (req, res) => {
   res.sendFile(path.join(__dirname, "admin.html"));
 });
 
+// Legal documents
+app.get("/privacy-policy", (req, res) => {
+  res.sendFile(path.join(__dirname, "legal", "privacy.html"));
+});
+app.get("/terms", (req, res) => {
+  res.sendFile(path.join(__dirname, "legal", "terms.html"));
+});
+app.get("/refund-policy", (req, res) => {
+  res.sendFile(path.join(__dirname, "legal", "refund.html"));
+});
+
 // Serve frontend (so the whole app can run from one free server)
 app.use(express.static(path.join(__dirname, "..", "frontend")));
 
