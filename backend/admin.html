@@ -51,6 +51,12 @@
       <input id="searchInput" placeholder="उदा. Everest, MDH, Amul, Cadbury..." onkeydown="if(event.key==='Enter') doSearch()">
       <button onclick="doSearch()">Search Open Food Facts</button>
       <div id="searchResults" class="grid"></div>
+
+      <hr style="margin:24px 0;border:none;border-top:1px solid #ddd;">
+      <h3>किंवा स्वतःचा फोटो अपलोड करून add करा</h3>
+      <p style="font-size:13px;color:#666">Brand च्या official वेबसाईटवरून फोटो सेव्ह करून इथून अपलोड कर (Amazon/Flipkart नको).</p>
+      <input type="file" id="manualFileInput" accept="image/*">
+      <button onclick="openManualAddModal()">+ फोटो अपलोड करून Add करा</button>
     </div>
 
     <div id="manageTab" class="hidden">
@@ -87,6 +93,7 @@ let adminKey = localStorage.getItem("adminKey") || "";
 let subcategories = [];
 let allProducts = [];
 let pendingItem = null;
+let pendingFile = null;
 
 if (adminKey) { document.getElementById('adminKeyInput').value = adminKey; login(); }
 
@@ -142,8 +149,27 @@ function doSearch() {
     });
 }
 
+function openManualAddModal() {
+  const fileInput = document.getElementById('manualFileInput');
+  if (!fileInput.files || !fileInput.files[0]) {
+    alert("आधी फोटो निवड");
+    return;
+  }
+  pendingItem = { name: "", image: null, quantity: "" };
+  pendingFile = fileInput.files[0];
+  const reader = new FileReader();
+  reader.onload = (e) => { document.getElementById('modalImg').src = e.target.result; };
+  reader.readAsDataURL(pendingFile);
+  document.getElementById('modalName').value = "";
+  document.getElementById('modalUnit').value = "";
+  document.getElementById('modalPrice').value = 0;
+  document.getElementById('modalMrp').value = 0;
+  document.getElementById('addModal').style.display = 'flex';
+}
+
 function openAddModal(item) {
   pendingItem = item;
+  pendingFile = null;
   document.getElementById('modalImg').src = item.image;
   document.getElementById('modalName').value = item.name;
   document.getElementById('modalUnit').value = item.quantity || '';
@@ -155,23 +181,54 @@ function closeModal() { document.getElementById('addModal').style.display = 'non
 
 function confirmAdd() {
   const [subCategory, section] = document.getElementById('modalSubcat').value.split('|');
-  const body = {
-    name: document.getElementById('modalName').value,
-    subCategory, section,
-    unit: document.getElementById('modalUnit').value,
-    price: document.getElementById('modalPrice').value,
-    mrp: document.getElementById('modalMrp').value,
-    image: pendingItem.image,
-  };
-  fetch(API + "/admin/products", {
-    method: "POST",
-    headers: { "Content-Type": "application/json", "x-admin-key": adminKey },
-    body: JSON.stringify(body)
-  }).then(r => r.json()).then(() => {
-    closeModal();
-    alert("Product added!");
-    loadProducts();
-  });
+  const name = document.getElementById('modalName').value;
+  const unit = document.getElementById('modalUnit').value;
+  const price = document.getElementById('modalPrice').value;
+  const mrp = document.getElementById('modalMrp').value;
+
+  const addBtn = event.target;
+  addBtn.disabled = true;
+  addBtn.textContent = "Adding...";
+
+  function finish(imageUrl) {
+    const body = { name, subCategory, section, unit, price, mrp, image: imageUrl };
+    fetch(API + "/admin/products", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "x-admin-key": adminKey },
+      body: JSON.stringify(body)
+    }).then(r => r.json()).then(() => {
+      closeModal();
+      addBtn.disabled = false;
+      addBtn.textContent = "Add Product";
+      alert("Product added!");
+      loadProducts();
+      document.getElementById('manualFileInput').value = "";
+    }).catch(() => {
+      addBtn.disabled = false;
+      addBtn.textContent = "Add Product";
+      alert("Add करता आलं नाही");
+    });
+  }
+
+  if (pendingFile) {
+    addBtn.textContent = "Uploading photo...";
+    const fd = new FormData();
+    fd.append("image", pendingFile);
+    fetch(API + "/admin/upload-image", {
+      method: "POST",
+      headers: { "x-admin-key": adminKey },
+      body: fd
+    }).then(r => r.json()).then(data => {
+      if (data.error) { alert("Upload अयशस्वी: " + data.error); addBtn.disabled = false; addBtn.textContent = "Add Product"; return; }
+      finish(data.url);
+    }).catch(() => {
+      alert("Upload अयशस्वी");
+      addBtn.disabled = false;
+      addBtn.textContent = "Add Product";
+    });
+  } else {
+    finish(pendingItem.image);
+  }
 }
 
 function loadProducts() {
@@ -200,7 +257,32 @@ function renderManage() {
 
 function editImage(id) {
   const p = allProducts.find(x => x.id === id);
-  const url = prompt("नवीन फोटो लिंक (Image URL) पेस्ट करा:\n\nAmazon/Flipkart वर तो प्रॉडक्ट शोधा → फोटोवर right-click → 'Copy image address'", p.image);
+  const useFile = confirm("फोटो file अपलोड करायची आहे का?\n(OK = फाईल निवडा, Cancel = लिंक पेस्ट करा)");
+  if (useFile) {
+    const inp = document.createElement('input');
+    inp.type = 'file';
+    inp.accept = 'image/*';
+    inp.onchange = () => {
+      if (!inp.files[0]) return;
+      const fd = new FormData();
+      fd.append("image", inp.files[0]);
+      fetch(API + "/admin/upload-image", {
+        method: "POST",
+        headers: { "x-admin-key": adminKey },
+        body: fd
+      }).then(r => r.json()).then(data => {
+        if (data.error) { alert("Upload अयशस्वी: " + data.error); return; }
+        fetch(API + "/admin/products/" + id, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json", "x-admin-key": adminKey },
+          body: JSON.stringify({ image: data.url })
+        }).then(() => { setTimeout(() => { loadProducts(); setTimeout(renderManage, 400); }, 300); });
+      });
+    };
+    inp.click();
+    return;
+  }
+  const url = prompt("नवीन फोटो लिंक (Image URL) पेस्ट करा:", p.image);
   if (url === null || url.trim() === "") return;
   fetch(API + "/admin/products/" + id, {
     method: "PUT",
