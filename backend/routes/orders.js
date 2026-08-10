@@ -13,6 +13,7 @@ const STATUS_STEPS = [
 ];
 
 function computeLiveStatus(order) {
+  if (order.manualStatus) return order; // admin manually set this, don't auto-override
   const elapsedMin = (Date.now() - new Date(order.createdAt).getTime()) / 60000;
   let status = STATUS_STEPS[0].status;
   for (const step of STATUS_STEPS) {
