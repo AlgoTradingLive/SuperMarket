@@ -1,17 +1,10 @@
 const express = require("express");
-const fs = require("fs");
-const path = require("path");
-
 const router = express.Router();
-const DATA_FILE = path.join(__dirname, "..", "data", "subcategories.json");
-
-function readSubcategories() {
-  return JSON.parse(fs.readFileSync(DATA_FILE, "utf-8"));
-}
 
 // GET /api/subcategories -> सगळ्या subcategories, section नुसार गटबद्ध
-router.get("/", (req, res) => {
-  const subs = readSubcategories();
+router.get("/", async (req, res) => {
+  const db = req.app.locals.db;
+  const subs = await db.collection("subcategories").find({}, { projection: { _id: 0 } }).toArray();
   const grouped = {};
   subs.forEach((s) => {
     if (!grouped[s.section]) grouped[s.section] = [];
