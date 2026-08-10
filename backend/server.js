@@ -8,6 +8,7 @@ const ordersRouter = require("./routes/orders");
 const subcategoriesRouter = require("./routes/subcategories");
 const storesRouter = require("./routes/stores");
 const adminRouter = require("./routes/admin");
+const paymentRouter = require("./routes/payment");
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -21,6 +22,7 @@ app.use("/api/orders", ordersRouter);
 app.use("/api/subcategories", subcategoriesRouter);
 app.use("/api/stores", storesRouter);
 app.use("/api/admin", adminRouter);
+app.use("/api/payment", paymentRouter);
 
 // Admin panel page
 app.get("/admin", (req, res) => {
