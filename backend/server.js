@@ -1,6 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const path = require("path");
+const { connectDB } = require("./db");
 
 const productsRouter = require("./routes/products");
 const ordersRouter = require("./routes/orders");
@@ -33,6 +34,15 @@ app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "..", "frontend", "index.html"));
 });
 
-app.listen(PORT, () => {
-  console.log(`🛒 QuickMart server running at http://localhost:${PORT}`);
+async function start() {
+  const db = await connectDB();
+  app.locals.db = db;
+  app.listen(PORT, () => {
+    console.log(`🛒 SuperMarket server running on port ${PORT}`);
+  });
+}
+
+start().catch((err) => {
+  console.error("❌ Failed to start server:", err);
+  process.exit(1);
 });
