@@ -6,6 +6,7 @@ import 'cart_screen.dart';
 import 'products_screen.dart';
 import 'app_drawer.dart';
 import 'category_screen.dart';
+import 'search_screen.dart';
 
 const kBrandGreen = Color(0xFF2E7D32);
 const kBrandGreenLight = Color(0xFFE8F5E9);
@@ -211,6 +212,17 @@ class _HomeScreenState extends State<HomeScreen> {
           errorBuilder: (_, __, ___) => const Text("कांकरीया सुपरमार्केट"),
         ),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.search),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => SearchScreen(cart: cart, onChangeQty: _changeQty),
+                ),
+              ).then((_) => setState(() {}));
+            },
+          ),
           Stack(
             alignment: Alignment.center,
             children: [
