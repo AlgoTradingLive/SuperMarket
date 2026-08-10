@@ -52,7 +52,7 @@ ${itemsList}
 
 ━━━━━━━━━━━━━━━━
 💰 <b>Total: ₹${order.total}</b>
-💳 Payment: Cash on Delivery`;
+💳 Payment: ${order.paymentMethod || "Cash on Delivery"}${order.razorpayPaymentId ? ` (Paid — ${order.razorpayPaymentId})` : ""}`;
 
   try {
     await fetch(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
@@ -72,7 +72,10 @@ ${itemsList}
 // POST /api/orders  -> place a new order
 router.post("/", async (req, res) => {
   const db = req.app.locals.db;
-  const { items, customerName, address, phone, storeId, storeName } = req.body;
+  const {
+    items, customerName, address, phone, storeId, storeName,
+    paymentMethod, razorpayOrderId, razorpayPaymentId,
+  } = req.body;
 
   if (!items || items.length === 0) {
     return res.status(400).json({ error: "Cart is empty" });
@@ -93,6 +96,9 @@ router.post("/", async (req, res) => {
     storeName: storeName || null,
     total,
     status: "Placed",
+    paymentMethod: paymentMethod === "Online" ? "Online" : "Cash on Delivery",
+    razorpayOrderId: razorpayOrderId || null,
+    razorpayPaymentId: razorpayPaymentId || null,
     createdAt: new Date().toISOString(),
   };
 
