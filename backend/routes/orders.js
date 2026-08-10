@@ -2,11 +2,30 @@ const express = require("express");
 const TELEGRAM_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
 const TELEGRAM_CHAT_ID = process.env.TELEGRAM_CHAT_ID;
 
+const router = express.Router();
+
+// Auto status progression thresholds (minutes since order placed)
+const STATUS_STEPS = [
+  { minutes: 0, status: "Placed" },
+  { minutes: 2, status: "Packed" },
+  { minutes: 8, status: "Out for Delivery" },
+  { minutes: 20, status: "Delivered" },
+];
+
+function computeLiveStatus(order) {
+  const elapsedMin = (Date.now() - new Date(order.createdAt).getTime()) / 60000;
+  let status = STATUS_STEPS[0].status;
+  for (const step of STATUS_STEPS) {
+    if (elapsedMin >= step.minutes) status = step.status;
+  }
+  return { ...order, status };
+}
+
 async function notifyTelegram(order) {
   if (!TELEGRAM_TOKEN || !TELEGRAM_CHAT_ID) return;
 
   const itemsList = order.items
-    .map(i => `${i.qty} × ${i.name} — ₹${i.price * i.qty}`)
+    .map((i) => `${i.qty} × ${i.name} — ₹${i.price * i.qty}`)
     .join("\n");
 
   const orderTime = new Date(order.createdAt).toLocaleString("en-IN", {
@@ -48,40 +67,10 @@ ${itemsList}
     console.error("Telegram notify failed:", e.message);
   }
 }
-const fs = require("fs");
-const path = require("path");
 
-const router = express.Router();
-const ORDERS_FILE = path.join(__dirname, "..", "data", "orders.json");
-
-// Auto status progression thresholds (minutes since order placed)
-const STATUS_STEPS = [
-  { minutes: 0, status: "Placed" },
-  { minutes: 2, status: "Packed" },
-  { minutes: 8, status: "Out for Delivery" },
-  { minutes: 20, status: "Delivered" },
-];
-
-function computeLiveStatus(order) {
-  const elapsedMin = (Date.now() - new Date(order.createdAt).getTime()) / 60000;
-  let status = STATUS_STEPS[0].status;
-  for (const step of STATUS_STEPS) {
-    if (elapsedMin >= step.minutes) status = step.status;
-  }
-  return { ...order, status };
-}
-
-function readOrders() {
-  if (!fs.existsSync(ORDERS_FILE)) return [];
-  return JSON.parse(fs.readFileSync(ORDERS_FILE, "utf-8"));
-}
-
-function writeOrders(orders) {
-  fs.writeFileSync(ORDERS_FILE, JSON.stringify(orders, null, 2));
-}
-
-// POST /api/orders  -> place a new order (mock checkout, no real payment)
-router.post("/", (req, res) => {
+// POST /api/orders  -> place a new order
+router.post("/", async (req, res) => {
+  const db = req.app.locals.db;
   const { items, customerName, address, phone, storeId, storeName } = req.body;
 
   if (!items || items.length === 0) {
@@ -106,27 +95,32 @@ router.post("/", (req, res) => {
     createdAt: new Date().toISOString(),
   };
 
-  const orders = readOrders();
-  orders.push(order);
-  writeOrders(orders);
+  await db.collection("orders").insertOne(order);
   notifyTelegram(order);
 
-  res.status(201).json({ message: "Order placed successfully", order: computeLiveStatus(order) });
+  const { _id, ...clean } = order;
+  res.status(201).json({ message: "Order placed successfully", order: computeLiveStatus(clean) });
 });
 
-// GET /api/orders?phone=xxxxxxxxxx  -> list orders (optionally filtered by phone) with live status
-router.get("/", (req, res) => {
+// GET /api/orders?phone=xxxxxxxxxx
+router.get("/", async (req, res) => {
+  const db = req.app.locals.db;
   const { phone } = req.query;
-  let orders = readOrders();
-  if (phone) orders = orders.filter(o => o.phone === phone);
-  orders = orders.map(computeLiveStatus).sort((a, b) => b.id - a.id);
-  res.json(orders);
+  const query = phone ? { phone } : {};
+  const orders = await db
+    .collection("orders")
+    .find(query, { projection: { _id: 0 } })
+    .sort({ id: -1 })
+    .toArray();
+  res.json(orders.map(computeLiveStatus));
 });
 
-// GET /api/orders/:id  -> single order with live status (for tracking screen)
-router.get("/:id", (req, res) => {
-  const orders = readOrders();
-  const order = orders.find(o => String(o.id) === req.params.id);
+// GET /api/orders/:id
+router.get("/:id", async (req, res) => {
+  const db = req.app.locals.db;
+  const order = await db
+    .collection("orders")
+    .findOne({ id: Number(req.params.id) }, { projection: { _id: 0 } });
   if (!order) return res.status(404).json({ error: "Order not found" });
   res.json(computeLiveStatus(order));
 });
