@@ -186,4 +186,31 @@ router.delete("/products/:id", checkAdmin, async (req, res) => {
   res.json({ deleted: true });
 });
 
+// GET /api/admin/orders -> full order list, newest first
+router.get("/orders", checkAdmin, async (req, res) => {
+  const db = req.app.locals.db;
+  const orders = await db
+    .collection("orders")
+    .find({}, { projection: { _id: 0 } })
+    .sort({ id: -1 })
+    .toArray();
+  res.json(orders);
+});
+
+// PUT /api/admin/orders/:id -> manually override status (e.g. "Cancelled", "Delivered")
+router.put("/orders/:id", checkAdmin, async (req, res) => {
+  const db = req.app.locals.db;
+  const { status } = req.body;
+  if (!status) return res.status(400).json({ error: "status required" });
+  const result = await db
+    .collection("orders")
+    .findOneAndUpdate(
+      { id: Number(req.params.id) },
+      { $set: { status, manualStatus: true } },
+      { returnDocument: "after", projection: { _id: 0 } }
+    );
+  if (!result || !result.value) return res.status(404).json({ error: "Not found" });
+  res.json(result.value);
+});
+
 module.exports = router;
