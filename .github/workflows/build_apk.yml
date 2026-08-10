@@ -74,7 +74,7 @@ jobs:
           content = open(path).read()
           content = content.replace(
               'id "com.android.application" version',
-              'id "com.google.gms.google-services" version "4.4.2" apply false\n    id "com.google.firebase.crashlytics" version "3.0.2" apply false\n    id "com.android.application" version',
+              'id "com.google.gms.google-services" version "4.4.2" apply false\n    id "com.google.firebase.crashlytics" version "2.9.9" apply false\n    id "com.android.application" version',
               1
           )
           open(path, "w").write(content)
