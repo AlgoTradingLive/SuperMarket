@@ -1,12 +1,9 @@
 const express = require("express");
-const fs = require("fs");
 const path = require("path");
 const https = require("https");
 const multer = require("multer");
 
 const router = express.Router();
-const PRODUCTS_FILE = path.join(__dirname, "..", "data", "products.json");
-const SUBCATS_FILE = path.join(__dirname, "..", "data", "subcategories.json");
 const ADMIN_KEY = process.env.ADMIN_KEY || "supermarket123";
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN || "";
 const GITHUB_REPO = "AlgoTradingLive/SuperMarket";
@@ -18,13 +15,6 @@ function checkAdmin(req, res, next) {
     return res.status(401).json({ error: "Unauthorized" });
   }
   next();
-}
-
-function readJSON(file) {
-  return JSON.parse(fs.readFileSync(file, "utf-8"));
-}
-function writeJSON(file, data) {
-  fs.writeFileSync(file, JSON.stringify(data, null, 2), "utf-8");
 }
 
 function fetchJSON(url) {
@@ -45,8 +35,7 @@ function fetchJSON(url) {
   });
 }
 
-// Commit an image file to the GitHub repo (mobile/assets/products/<name>)
-// so it's served permanently via jsDelivr CDN, no ephemeral disk involved.
+// Commit an image file to the GitHub repo so it's served permanently via jsDelivr CDN.
 function commitImageToGitHub(filename, base64Content) {
   return new Promise((resolve, reject) => {
     if (!GITHUB_TOKEN) return reject(new Error("GITHUB_TOKEN not configured on server"));
@@ -89,13 +78,12 @@ function commitImageToGitHub(filename, base64Content) {
   });
 }
 
-// POST /api/admin/upload-image  (multipart/form-data, field name "image")
+// POST /api/admin/upload-image
 router.post("/upload-image", checkAdmin, upload.single("image"), async (req, res) => {
   if (!req.file) return res.status(400).json({ error: "No file uploaded" });
   try {
     const ext = path.extname(req.file.originalname) || ".jpg";
-    const safeName =
-      Date.now() + "-" + Math.random().toString(36).slice(2, 8) + ext.toLowerCase();
+    const safeName = Date.now() + "-" + Math.random().toString(36).slice(2, 8) + ext.toLowerCase();
     const base64 = req.file.buffer.toString("base64");
     const url = await commitImageToGitHub(safeName, base64);
     res.json({ url });
@@ -104,7 +92,7 @@ router.post("/upload-image", checkAdmin, upload.single("image"), async (req, res
   }
 });
 
-// GET /api/admin/off-search?q=Everest  -> search Open Food Facts (real branded product photos)
+// GET /api/admin/off-search?q=Everest
 router.get("/off-search", checkAdmin, async (req, res) => {
   const q = req.query.q;
   if (!q) return res.status(400).json({ error: "q required" });
@@ -128,24 +116,31 @@ router.get("/off-search", checkAdmin, async (req, res) => {
   }
 });
 
-// GET /api/admin/products -> full list (for admin listing/edit)
-router.get("/products", checkAdmin, (req, res) => {
-  res.json(readJSON(PRODUCTS_FILE));
+// GET /api/admin/products -> full list
+router.get("/products", checkAdmin, async (req, res) => {
+  const db = req.app.locals.db;
+  const products = await db.collection("products").find({}, { projection: { _id: 0 } }).toArray();
+  res.json(products);
 });
 
 // GET /api/admin/subcategories
-router.get("/subcategories", checkAdmin, (req, res) => {
-  res.json(readJSON(SUBCATS_FILE));
+router.get("/subcategories", checkAdmin, async (req, res) => {
+  const db = req.app.locals.db;
+  const subs = await db.collection("subcategories").find({}, { projection: { _id: 0 } }).toArray();
+  res.json(subs);
 });
 
 // POST /api/admin/products -> add a new product
-router.post("/products", checkAdmin, (req, res) => {
+router.post("/products", checkAdmin, async (req, res) => {
+  const db = req.app.locals.db;
   const { name, subCategory, section, price, mrp, unit, image } = req.body;
   if (!name || !subCategory || !section || !unit || !image) {
     return res.status(400).json({ error: "Missing required fields" });
   }
-  const products = readJSON(PRODUCTS_FILE);
-  const newId = products.length ? Math.max(...products.map((p) => p.id)) + 1 : 1;
+
+  const last = await db.collection("products").find().sort({ id: -1 }).limit(1).toArray();
+  const newId = last.length ? last[0].id + 1 : 1;
+
   const product = {
     id: newId,
     name,
@@ -157,28 +152,37 @@ router.post("/products", checkAdmin, (req, res) => {
     image,
     inStock: true,
   };
-  products.push(product);
-  writeJSON(PRODUCTS_FILE, products);
-  res.status(201).json(product);
+  await db.collection("products").insertOne(product);
+  const { _id, ...clean } = product;
+  res.status(201).json(clean);
 });
 
 // PUT /api/admin/products/:id -> edit
-router.put("/products/:id", checkAdmin, (req, res) => {
-  const products = readJSON(PRODUCTS_FILE);
-  const idx = products.findIndex((p) => p.id === Number(req.params.id));
-  if (idx === -1) return res.status(404).json({ error: "Not found" });
-  products[idx] = { ...products[idx], ...req.body, id: products[idx].id };
-  writeJSON(PRODUCTS_FILE, products);
-  res.json(products[idx]);
+router.put("/products/:id", checkAdmin, async (req, res) => {
+  const db = req.app.locals.db;
+  const id = Number(req.params.id);
+  const update = { ...req.body };
+  delete update.id;
+  delete update._id;
+
+  const result = await db.collection("products").findOneAndUpdate(
+    { id },
+    { $set: update },
+    { returnDocument: "after", projection: { _id: 0 } }
+  );
+  if (!result || !result.value) {
+    const existing = await db.collection("products").findOne({ id }, { projection: { _id: 0 } });
+    if (!existing) return res.status(404).json({ error: "Not found" });
+    return res.json(existing);
+  }
+  res.json(result.value);
 });
 
 // DELETE /api/admin/products/:id
-router.delete("/products/:id", checkAdmin, (req, res) => {
-  let products = readJSON(PRODUCTS_FILE);
-  const before = products.length;
-  products = products.filter((p) => p.id !== Number(req.params.id));
-  if (products.length === before) return res.status(404).json({ error: "Not found" });
-  writeJSON(PRODUCTS_FILE, products);
+router.delete("/products/:id", checkAdmin, async (req, res) => {
+  const db = req.app.locals.db;
+  const result = await db.collection("products").deleteOne({ id: Number(req.params.id) });
+  if (result.deletedCount === 0) return res.status(404).json({ error: "Not found" });
   res.json({ deleted: true });
 });
 
