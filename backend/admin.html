@@ -53,8 +53,14 @@
       <div id="searchResults" class="grid"></div>
 
       <hr style="margin:24px 0;border:none;border-top:1px solid #ddd;">
-      <h3>किंवा स्वतःचा फोटो अपलोड करून add करा</h3>
-      <p style="font-size:13px;color:#666">Brand च्या official वेबसाईटवरून फोटो सेव्ह करून इथून अपलोड कर (Amazon/Flipkart नको).</p>
+      <h3>फोटो लिंक टाकून add करा (सोपं, GitHub token नको)</h3>
+      <p style="font-size:13px;color:#666">Brand च्या official वेबसाईटवर फोटो शोध → त्यावर right-click → "Copy image address" → इथे पेस्ट कर.</p>
+      <input id="manualUrlInput" placeholder="Image URL इथे पेस्ट करा">
+      <button onclick="openManualUrlModal()">+ लिंकवरून Add करा</button>
+
+      <hr style="margin:24px 0;border:none;border-top:1px solid #ddd;">
+      <h3>किंवा फोटो file अपलोड करून add करा</h3>
+      <p style="font-size:13px;color:#666">(यासाठी server वर GITHUB_TOKEN सेट असणं गरजेचं आहे)</p>
       <input type="file" id="manualFileInput" accept="image/*">
       <button onclick="openManualAddModal()">+ फोटो अपलोड करून Add करा</button>
     </div>
@@ -149,6 +155,22 @@ function doSearch() {
     });
 }
 
+function openManualUrlModal() {
+  const url = document.getElementById('manualUrlInput').value.trim();
+  if (!url) {
+    alert("आधी Image URL पेस्ट कर");
+    return;
+  }
+  pendingItem = { name: "", image: url, quantity: "" };
+  pendingFile = null;
+  document.getElementById('modalImg').src = url;
+  document.getElementById('modalName').value = "";
+  document.getElementById('modalUnit').value = "";
+  document.getElementById('modalPrice').value = 0;
+  document.getElementById('modalMrp').value = 0;
+  document.getElementById('addModal').style.display = 'flex';
+}
+
 function openManualAddModal() {
   const fileInput = document.getElementById('manualFileInput');
   if (!fileInput.files || !fileInput.files[0]) {
@@ -203,6 +225,7 @@ function confirmAdd() {
       alert("Product added!");
       loadProducts();
       document.getElementById('manualFileInput').value = "";
+      document.getElementById('manualUrlInput').value = "";
     }).catch(() => {
       addBtn.disabled = false;
       addBtn.textContent = "Add Product";
