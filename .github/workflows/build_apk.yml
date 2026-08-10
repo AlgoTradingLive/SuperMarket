@@ -62,6 +62,38 @@ jobs:
           cp mobile/pubspec.yaml build_project/pubspec.yaml
           mkdir -p build_project/assets
           cp -r mobile/assets/. build_project/assets/
+          cp mobile/google-services.json build_project/android/app/google-services.json
+
+      - name: Add Firebase Gradle plugins
+        run: |
+          python3 - << 'PYEOF'
+          import re
+
+          # settings.gradle: add google-services + crashlytics plugin versions
+          path = "build_project/android/settings.gradle"
+          content = open(path).read()
+          content = content.replace(
+              'id "com.android.application" version',
+              'id "com.google.gms.google-services" version "4.4.2" apply false\n    id "com.google.firebase.crashlytics" version "3.0.2" apply false\n    id "com.android.application" version',
+              1
+          )
+          open(path, "w").write(content)
+
+          # app/build.gradle: apply the plugins in this module
+          path2 = "build_project/android/app/build.gradle"
+          content2 = open(path2).read()
+          content2 = re.sub(
+              r'(id\s+"kotlin-android")',
+              r'\1\n    id "com.google.gms.google-services"\n    id "com.google.firebase.crashlytics"',
+              content2,
+              count=1
+          )
+          open(path2, "w").write(content2)
+          PYEOF
+          echo "--- settings.gradle ---"
+          cat build_project/android/settings.gradle
+          echo "--- app/build.gradle plugins ---"
+          grep -n "id " build_project/android/app/build.gradle
 
       - name: Add INTERNET and Location permissions
         run: |
