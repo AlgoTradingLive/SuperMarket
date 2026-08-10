@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "40542938270",
+    "project_id": "supermarket-nsk",
+    "storage_bucket": "supermarket-nsk.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:40542938270:android:9f49fef09ca187f296478f",
+        "android_client_info": {
+          "package_name": "com.algotradinglive.supermarket"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyATHtEtAg8Kc6tUkMdNIORDXYhRVS9RnAM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
