@@ -48,6 +48,9 @@ class ApiService {
     required String address,
     int? storeId,
     String? storeName,
+    String paymentMethod = "COD",
+    String? razorpayOrderId,
+    String? razorpayPaymentId,
   }) async {
     final uri = Uri.parse("$baseUrl/orders");
     final body = jsonEncode({
@@ -64,6 +67,9 @@ class ApiService {
       "address": address,
       "storeId": storeId,
       "storeName": storeName,
+      "paymentMethod": paymentMethod,
+      "razorpayOrderId": razorpayOrderId,
+      "razorpayPaymentId": razorpayPaymentId,
     });
 
     final res = await http
@@ -85,5 +91,36 @@ class ApiService {
       return data.map((e) => Order.fromJson(e)).toList();
     }
     throw Exception("Orders load करता आले नाहीत");
+  }
+
+  static Future<Map<String, dynamic>> createRazorpayOrder(int amount) async {
+    final uri = Uri.parse("$baseUrl/payment/create-order");
+    final res = await http
+        .post(uri,
+            headers: {"Content-Type": "application/json"},
+            body: jsonEncode({"amount": amount}))
+        .timeout(const Duration(seconds: 30));
+    final data = jsonDecode(res.body);
+    if (res.statusCode == 200) return data;
+    throw Exception(data['error'] ?? "Payment order तयार करता आला नाही");
+  }
+
+  static Future<bool> verifyPayment({
+    required String razorpayOrderId,
+    required String razorpayPaymentId,
+    required String razorpaySignature,
+  }) async {
+    final uri = Uri.parse("$baseUrl/payment/verify");
+    final res = await http
+        .post(uri,
+            headers: {"Content-Type": "application/json"},
+            body: jsonEncode({
+              "razorpay_order_id": razorpayOrderId,
+              "razorpay_payment_id": razorpayPaymentId,
+              "razorpay_signature": razorpaySignature,
+            }))
+        .timeout(const Duration(seconds: 30));
+    final data = jsonDecode(res.body);
+    return data['verified'] == true;
   }
 }
