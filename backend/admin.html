@@ -44,6 +44,7 @@
   <div class="tabs">
     <div class="tab active" onclick="switchTab('search')">Search &amp; Add</div>
     <div class="tab" onclick="switchTab('manage')">Manage Products</div>
+    <div class="tab" onclick="switchTab('orders')">Orders</div>
   </div>
 
   <div class="container">
@@ -68,6 +69,10 @@
     <div id="manageTab" class="hidden">
       <input id="filterInput" placeholder="नावाने filter करा..." oninput="renderManage()">
       <div id="manageList" class="grid"></div>
+    </div>
+
+    <div id="ordersTab" class="hidden">
+      <div id="ordersList"></div>
     </div>
   </div>
 </div>
@@ -128,7 +133,55 @@ function switchTab(tab) {
   event.target.classList.add('active');
   document.getElementById('searchTab').classList.toggle('hidden', tab !== 'search');
   document.getElementById('manageTab').classList.toggle('hidden', tab !== 'manage');
+  document.getElementById('ordersTab').classList.toggle('hidden', tab !== 'orders');
   if (tab === 'manage') renderManage();
+  if (tab === 'orders') loadOrders();
+}
+
+const ORDER_STATUSES = ["Placed", "Packed", "Out for Delivery", "Delivered", "Cancelled"];
+
+function loadOrders() {
+  document.getElementById('ordersList').innerHTML = "Loading...";
+  fetch(API + "/admin/orders", { headers: { "x-admin-key": adminKey } })
+    .then(r => r.json())
+    .then(orders => {
+      if (!orders.length) {
+        document.getElementById('ordersList').innerHTML = "<p>अजून एकही ऑर्डर नाहीये.</p>";
+        return;
+      }
+      document.getElementById('ordersList').innerHTML = orders.map(o => `
+        <div class="card" style="margin-bottom:12px;padding:14px;">
+          <div style="display:flex;justify-content:space-between;font-weight:bold;">
+            <span>Order #${o.id}</span>
+            <span style="color:#2E7D32">₹${o.total}</span>
+          </div>
+          <div style="font-size:12px;color:#777;margin:4px 0">
+            ${new Date(o.createdAt).toLocaleString('en-IN', {day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'})}
+            ${o.storeName ? ' • 🏬 ' + o.storeName : ''}
+          </div>
+          <div style="font-size:13px;margin:6px 0">
+            <strong>${o.customerName}</strong> • 📞 ${o.phone}<br>
+            📍 ${o.address}
+          </div>
+          <div style="font-size:13px;margin:6px 0;color:#444">
+            ${o.items.map(i => `${i.qty} × ${i.name}`).join(', ')}
+          </div>
+          <div style="margin-top:8px;display:flex;gap:8px;align-items:center;">
+            <select onchange="updateOrderStatus(${o.id}, this.value)" style="width:auto;margin:0;padding:6px;">
+              ${ORDER_STATUSES.map(s => `<option value="${s}" ${s===o.status?'selected':''}>${s}</option>`).join('')}
+            </select>
+          </div>
+        </div>
+      `).join('');
+    });
+}
+
+function updateOrderStatus(id, status) {
+  fetch(API + "/admin/orders/" + id, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json", "x-admin-key": adminKey },
+    body: JSON.stringify({ status })
+  }).then(() => loadOrders());
 }
 
 function doSearch() {
