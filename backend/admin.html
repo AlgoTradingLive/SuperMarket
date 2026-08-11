@@ -64,6 +64,15 @@
       <p style="font-size:13px;color:#666">(यासाठी server वर GITHUB_TOKEN सेट असणं गरजेचं आहे)</p>
       <input type="file" id="manualFileInput" accept="image/*">
       <button onclick="openManualAddModal()">+ फोटो अपलोड करून Add करा</button>
+
+      <hr style="margin:24px 0;border:none;border-top:1px solid #ddd;">
+      <h3>Brand Bundle Import (एका क्लिकवर संपूर्ण brand catalog)</h3>
+      <p style="font-size:13px;color:#666">Official website वरून तयार केलेला संपूर्ण product list, एका दमात नवीन section म्हणून add होईल.</p>
+      <div class="row-actions">
+        <button onclick="importBundle('amul')">Import Amul (162 products)</button>
+        <button onclick="importBundle('patanjali')">Import Patanjali (59 products)</button>
+      </div>
+      <div id="bundleStatus" style="margin-top:10px;font-size:13px;"></div>
     </div>
 
     <div id="manageTab" class="hidden">
@@ -206,6 +215,24 @@ function doSearch() {
         </div>
       `).join('');
     });
+}
+
+function importBundle(bundle) {
+  const statusEl = document.getElementById('bundleStatus');
+  statusEl.textContent = "Importing... थोडा वेळ लागेल.";
+  fetch(API + "/admin/import-bundle", {
+    method: "POST",
+    headers: { "Content-Type": "application/json", "x-admin-key": adminKey },
+    body: JSON.stringify({ bundle })
+  }).then(r => r.json()).then(data => {
+    if (data.error) {
+      statusEl.textContent = "❌ Error: " + data.error;
+      return;
+    }
+    statusEl.textContent = `✅ ${data.section}: ${data.productsAdded} products, ${data.subcategoriesAdded} नवीन categories add झाल्या.`;
+  }).catch(() => {
+    statusEl.textContent = "❌ Import अयशस्वी झालं.";
+  });
 }
 
 function openManualUrlModal() {
