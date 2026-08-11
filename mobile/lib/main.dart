@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
+import 'services/push_service.dart';
 import 'screens/home_screen.dart';
 
 Future<void> main() async {
@@ -22,6 +23,7 @@ Future<void> main() async {
       FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
       return true;
     };
+    await PushService.init();
   }
 
   runApp(const QuickMartApp());
@@ -35,6 +37,7 @@ class QuickMartApp extends StatelessWidget {
     return MaterialApp(
       title: 'कांकरीया सुपरमार्केट',
       debugShowCheckedModeBanner: false,
+      scaffoldMessengerKey: PushService.messengerKey,
       theme: ThemeData(
         primaryColor: const Color(0xFF2E7D32),
         colorScheme: ColorScheme.fromSeed(
