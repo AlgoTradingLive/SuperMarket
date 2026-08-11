@@ -2,6 +2,7 @@ const express = require("express");
 const path = require("path");
 const https = require("https");
 const multer = require("multer");
+const { sendPushToPhone } = require("../utils/notify");
 
 const router = express.Router();
 const ADMIN_KEY = process.env.ADMIN_KEY || "supermarket123";
@@ -210,7 +211,16 @@ router.put("/orders/:id", checkAdmin, async (req, res) => {
       { returnDocument: "after", projection: { _id: 0 } }
     );
   if (!result || !result.value) return res.status(404).json({ error: "Not found" });
-  res.json(result.value);
+
+  const order = result.value;
+  sendPushToPhone(
+    db,
+    order.phone,
+    "Order Update",
+    `Your order #${order.id} is now "${status}"`
+  );
+
+  res.json(order);
 });
 
 module.exports = router;
