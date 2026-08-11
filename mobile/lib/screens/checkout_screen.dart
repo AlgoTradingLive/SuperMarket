@@ -4,6 +4,7 @@ import 'package:razorpay_flutter/razorpay_flutter.dart';
 import '../models/product.dart';
 import '../models/store.dart';
 import '../services/api_service.dart';
+import '../services/push_service.dart';
 import 'store_select_screen.dart';
 
 const kBrandGreen = Color(0xFF2E7D32);
@@ -180,6 +181,12 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     );
     final orderId = res['order']['id'];
     await _saveDetails();
+    if (PushService.currentToken != null) {
+      ApiService.registerDeviceToken(
+        phone: phoneCtrl.text.trim(),
+        token: PushService.currentToken!,
+      );
+    }
 
     if (!mounted) return;
     setState(() => placing = false);
