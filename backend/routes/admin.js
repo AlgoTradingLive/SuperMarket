@@ -1,5 +1,6 @@
 const express = require("express");
 const path = require("path");
+const fs = require("fs");
 const https = require("https");
 const multer = require("multer");
 const { sendPushToPhone } = require("../utils/notify");
@@ -221,6 +222,87 @@ router.put("/orders/:id", checkAdmin, async (req, res) => {
   );
 
   res.json(order);
+});
+
+// POST /api/admin/import-bundle  { bundle: "amul" | "patanjali" }
+// Bulk-imports a pre-prepared brand product dataset (bundled JSON files
+// shipped with the backend) into a dedicated top-level "section" for that brand.
+router.post("/import-bundle", checkAdmin, async (req, res) => {
+  const db = req.app.locals.db;
+  const { bundle } = req.body;
+  const DATA_DIR = path.join(__dirname, "..", "data");
+
+  try {
+    let rawProducts = [];
+    let sectionName = "";
+
+    if (bundle === "amul") {
+      sectionName = "Amul";
+      const p1 = JSON.parse(fs.readFileSync(path.join(DATA_DIR, "amul_products_part1.json"), "utf-8"));
+      const p2 = JSON.parse(fs.readFileSync(path.join(DATA_DIR, "amul_products_part2.json"), "utf-8"));
+      rawProducts = [...p1, ...p2].map((p) => ({
+        name: p.name,
+        subCategory: p.section, // Amul's "section" field is the finer grouping (Milk, Protein, etc.)
+        section: sectionName,
+        price: p.price,
+        mrp: p.mrp,
+        unit: p.unit,
+        image: p.image,
+        inStock: p.inStock !== false,
+      }));
+    } else if (bundle === "patanjali") {
+      sectionName = "Patanjali";
+      const products = JSON.parse(fs.readFileSync(path.join(DATA_DIR, "patanjali_products.json"), "utf-8"));
+      rawProducts = products.map((p) => ({
+        name: p.name,
+        subCategory: p.subCategory,
+        section: sectionName,
+        price: p.price,
+        mrp: p.mrp,
+        unit: p.unit,
+        image: p.image,
+        inStock: p.inStock !== false,
+      }));
+    } else {
+      return res.status(400).json({ error: "bundle must be 'amul' or 'patanjali'" });
+    }
+
+    // Assign fresh sequential ids continuing from current max
+    const lastProduct = await db.collection("products").find().sort({ id: -1 }).limit(1).toArray();
+    let nextId = lastProduct.length ? lastProduct[0].id + 1 : 1;
+    const productsToInsert = rawProducts.map((p) => ({ id: nextId++, ...p }));
+
+    // Build subcategory entries (dedup by name+section) with an icon
+    // taken from the first product in that group.
+    const subcatMap = new Map();
+    for (const p of productsToInsert) {
+      const key = `${p.subCategory}|${p.section}`;
+      if (!subcatMap.has(key)) {
+        subcatMap.set(key, { name: p.subCategory, section: p.section, icon: p.image });
+      }
+    }
+    const existingSubcats = await db
+      .collection("subcategories")
+      .find({ section: sectionName })
+      .toArray();
+    const existingNames = new Set(existingSubcats.map((s) => s.name));
+    const newSubcats = [...subcatMap.values()].filter((s) => !existingNames.has(s.name));
+
+    const lastSubcat = await db.collection("subcategories").find().sort({ id: -1 }).limit(1).toArray();
+    let nextSubId = lastSubcat.length ? lastSubcat[0].id + 1 : 1;
+    const subcatsToInsert = newSubcats.map((s) => ({ id: nextSubId++, ...s }));
+
+    if (productsToInsert.length) await db.collection("products").insertMany(productsToInsert);
+    if (subcatsToInsert.length) await db.collection("subcategories").insertMany(subcatsToInsert);
+
+    res.json({
+      section: sectionName,
+      productsAdded: productsToInsert.length,
+      subcategoriesAdded: subcatsToInsert.length,
+    });
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
 });
 
 module.exports = router;
