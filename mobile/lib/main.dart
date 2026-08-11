@@ -6,15 +6,23 @@ import 'screens/home_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
 
-  // Send Flutter framework errors to Crashlytics
-  FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterFatalError;
-  // Send errors outside of Flutter (async/platform errors) to Crashlytics too
-  PlatformDispatcher.instance.onError = (error, stack) {
-    FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
-    return true;
-  };
+  bool firebaseReady = false;
+  try {
+    await Firebase.initializeApp();
+    firebaseReady = true;
+  } catch (e, st) {
+    // Don't let a Firebase problem block the whole app from launching.
+    debugPrint("Firebase init failed: $e");
+  }
+
+  if (firebaseReady) {
+    FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterFatalError;
+    PlatformDispatcher.instance.onError = (error, stack) {
+      FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
+      return true;
+    };
+  }
 
   runApp(const QuickMartApp());
 }
