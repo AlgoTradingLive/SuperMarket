@@ -123,4 +123,20 @@ class ApiService {
     final data = jsonDecode(res.body);
     return data['verified'] == true;
   }
+
+  static Future<void> registerDeviceToken({
+    required String phone,
+    required String token,
+  }) async {
+    try {
+      final uri = Uri.parse("$baseUrl/device-token");
+      await http
+          .post(uri,
+              headers: {"Content-Type": "application/json"},
+              body: jsonEncode({"phone": phone, "token": token}))
+          .timeout(const Duration(seconds: 15));
+    } catch (_) {
+      // Non-critical — silently ignore if this fails
+    }
+  }
 }
