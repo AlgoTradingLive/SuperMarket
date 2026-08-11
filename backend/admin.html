@@ -24,8 +24,8 @@
   .card .meta { font-size: 11px; color: #777; margin-bottom: 6px; }
   .card button { width: 100%; font-size: 12px; padding: 6px; }
   #loginBox { max-width: 320px; margin: 60px auto; background: white; padding: 24px; border-radius: 10px; text-align: center; }
-  .row-actions { display: flex; gap: 6px; margin-top: 6px; }
-  .row-actions button { flex: 1; }
+  .row-actions { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+  .row-actions button { flex: 1 1 calc(50% - 3px); min-width: 60px; padding: 8px 4px; font-size: 11px; }
   #addModal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 20; align-items: center; justify-content: center; }
   #addModal .box { background: white; padding: 20px; border-radius: 10px; width: 90%; max-width: 400px; max-height: 90vh; overflow-y: auto; }
   .hidden { display: none !important; }
@@ -322,6 +322,7 @@ function renderManage() {
         <div class="name">${p.name}</div>
         <div class="meta">₹${p.price} (MRP ₹${p.mrp}) • ${p.unit}</div>
         <div class="row-actions">
+          <button class="secondary" onclick="editName(${p.id})">Edit Name</button>
           <button class="secondary" onclick="editPrice(${p.id})">Edit Price</button>
           <button class="secondary" onclick="editImage(${p.id})">Edit Photo</button>
           <button class="danger" onclick="deleteProduct(${p.id})">Delete</button>
@@ -329,6 +330,17 @@ function renderManage() {
       </div>
     </div>
   `).join('');
+}
+
+function editName(id) {
+  const p = allProducts.find(x => x.id === id);
+  const name = prompt("नवीन नाव:", p.name);
+  if (name === null || name.trim() === "") return;
+  fetch(API + "/admin/products/" + id, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json", "x-admin-key": adminKey },
+    body: JSON.stringify({ name: name.trim() })
+  }).then(() => { setTimeout(() => { loadProducts(); setTimeout(renderManage, 400); }, 300); });
 }
 
 function editImage(id) {
