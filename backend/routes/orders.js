@@ -133,3 +133,5 @@ router.get("/:id", async (req, res) => {
 });
 
 module.exports = router;
+module.exports.STATUS_STEPS = STATUS_STEPS;
+module.exports.computeLiveStatus = computeLiveStatus;
