@@ -165,9 +165,11 @@ class _CartScreenState extends State<CartScreen> {
                             ),
                           );
                           if (placed == true) {
-                            setState(() {
-                              widget.cart.clear();
-                            });
+                            widget.cart.clear();
+                            if (context.mounted) {
+                              Navigator.of(context)
+                                  .popUntil((route) => route.isFirst);
+                            }
                           }
                         },
                   child: const Text("Proceed to Checkout", style: TextStyle(color: Colors.white)),
