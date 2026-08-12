@@ -269,7 +269,7 @@ router.post("/import-bundle", checkAdmin, async (req, res) => {
       }));
     } else if (bundle === "patanjali") {
       sectionName = "Patanjali";
-      const products = JSON.parse(fs.readFileSync(path.join(DATA_DIR, "patanjali_products.json"), "utf-8"));
+      const products = JSON.parse(fs.readFileSync(path.join(DATA_DIR, "patanjali_all_products.json"), "utf-8"));
       rawProducts = products.map((p) => ({
         name: p.name,
         subCategory: p.subCategory,
@@ -283,6 +283,15 @@ router.post("/import-bundle", checkAdmin, async (req, res) => {
     } else {
       return res.status(400).json({ error: "bundle must be 'amul' or 'patanjali'" });
     }
+
+    // Skip products that already exist in this section (by name, case-insensitive)
+    // so re-running the import (e.g. after a bigger file was added) doesn't duplicate.
+    const existingProducts = await db
+      .collection("products")
+      .find({ section: sectionName })
+      .toArray();
+    const existingProductNames = new Set(existingProducts.map((p) => p.name.trim().toLowerCase()));
+    rawProducts = rawProducts.filter((p) => !existingProductNames.has(p.name.trim().toLowerCase()));
 
     // Assign fresh sequential ids continuing from current max
     const lastProduct = await db.collection("products").find().sort({ id: -1 }).limit(1).toArray();
