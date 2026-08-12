@@ -162,10 +162,28 @@ function renderCategories() {
       <div class="body">
         <div class="name">${s.name}</div>
         <div class="meta">${s.section}</div>
-        <button onclick="editCategoryIcon(${s.id})">Edit Icon</button>
+        <div class="row-actions">
+          <button class="secondary" onclick="editCategoryName(${s.id})">Edit Name</button>
+          <button onclick="editCategoryIcon(${s.id})">Edit Icon</button>
+        </div>
       </div>
     </div>
   `).join('');
+}
+
+function editCategoryName(id) {
+  const s = subcategories.find(x => x.id === id);
+  const name = prompt("नवीन नाव:", s.name);
+  if (name === null || name.trim() === "") return;
+  fetch(API + "/admin/subcategories/" + id, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json", "x-admin-key": adminKey },
+    body: JSON.stringify({ name: name.trim() })
+  }).then(() => {
+    fetch(API + "/admin/subcategories", { headers: { "x-admin-key": adminKey } })
+      .then(r => r.json())
+      .then(data => { subcategories = data; renderCategories(); });
+  });
 }
 
 function editCategoryIcon(id) {
