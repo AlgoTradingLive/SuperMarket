@@ -45,6 +45,7 @@
     <div class="tab active" onclick="switchTab('search')">Search &amp; Add</div>
     <div class="tab" onclick="switchTab('manage')">Manage Products</div>
     <div class="tab" onclick="switchTab('orders')">Orders</div>
+    <div class="tab" onclick="switchTab('categories')">Categories</div>
   </div>
 
   <div class="container">
@@ -82,6 +83,11 @@
 
     <div id="ordersTab" class="hidden">
       <div id="ordersList"></div>
+    </div>
+
+    <div id="categoriesTab" class="hidden">
+      <p style="font-size:13px;color:#666">Home screen वरचे category icons इथून बदलता येतील.</p>
+      <div id="categoriesList" class="grid"></div>
     </div>
   </div>
 </div>
@@ -143,8 +149,38 @@ function switchTab(tab) {
   document.getElementById('searchTab').classList.toggle('hidden', tab !== 'search');
   document.getElementById('manageTab').classList.toggle('hidden', tab !== 'manage');
   document.getElementById('ordersTab').classList.toggle('hidden', tab !== 'orders');
+  document.getElementById('categoriesTab').classList.toggle('hidden', tab !== 'categories');
   if (tab === 'manage') renderManage();
   if (tab === 'orders') loadOrders();
+  if (tab === 'categories') renderCategories();
+}
+
+function renderCategories() {
+  document.getElementById('categoriesList').innerHTML = subcategories.map(s => `
+    <div class="card">
+      <img src="${s.icon}" onerror="this.style.display='none'">
+      <div class="body">
+        <div class="name">${s.name}</div>
+        <div class="meta">${s.section}</div>
+        <button onclick="editCategoryIcon(${s.id})">Edit Icon</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function editCategoryIcon(id) {
+  const s = subcategories.find(x => x.id === id);
+  const url = prompt("नवीन icon लिंक (Image URL) पेस्ट करा:", s.icon);
+  if (url === null || url.trim() === "") return;
+  fetch(API + "/admin/subcategories/" + id, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json", "x-admin-key": adminKey },
+    body: JSON.stringify({ icon: url.trim() })
+  }).then(() => {
+    fetch(API + "/admin/subcategories", { headers: { "x-admin-key": adminKey } })
+      .then(r => r.json())
+      .then(data => { subcategories = data; renderCategories(); });
+  });
 }
 
 const ORDER_STATUSES = ["Placed", "Packed", "Out for Delivery", "Delivered", "Cancelled"];
