@@ -132,6 +132,23 @@ router.get("/subcategories", checkAdmin, async (req, res) => {
   res.json(subs);
 });
 
+// PUT /api/admin/subcategories/:id -> edit icon/name of a category
+router.put("/subcategories/:id", checkAdmin, async (req, res) => {
+  const db = req.app.locals.db;
+  const update = { ...req.body };
+  delete update.id;
+  delete update._id;
+  const result = await db
+    .collection("subcategories")
+    .findOneAndUpdate(
+      { id: Number(req.params.id) },
+      { $set: update },
+      { returnDocument: "after", projection: { _id: 0 } }
+    );
+  if (!result || !result.value) return res.status(404).json({ error: "Not found" });
+  res.json(result.value);
+});
+
 // POST /api/admin/products -> add a new product
 router.post("/products", checkAdmin, async (req, res) => {
   const db = req.app.locals.db;
