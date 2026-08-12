@@ -3,6 +3,7 @@ import '../models/product.dart';
 import '../services/api_service.dart';
 import '../services/wishlist_store.dart';
 import 'cart_screen.dart';
+import 'product_detail_screen.dart';
 
 const kBrandGreen = Color(0xFF2E7D32);
 
@@ -195,7 +196,19 @@ class _ProductsScreenState extends State<ProductsScreen> {
       itemBuilder: (_, i) {
         final p = products[i];
         final qty = widget.cart[p.id]?.qty ?? 0;
-        return Container(
+        return InkWell(
+          borderRadius: BorderRadius.circular(10),
+          onTap: () async {
+            await Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => ProductDetailScreen(
+                    product: p, cart: widget.cart, onChangeQty: widget.onChangeQty),
+              ),
+            );
+            setState(() {});
+          },
+          child: Container(
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(10),
@@ -340,6 +353,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
                       ),
                     ),
             ],
+          ),
           ),
         );
       },
