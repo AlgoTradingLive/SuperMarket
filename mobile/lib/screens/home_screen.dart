@@ -209,7 +209,7 @@ class _HomeScreenState extends State<HomeScreen> {
         title: Image.asset(
           'assets/logo.png',
           height: 40,
-          errorBuilder: (_, __, ___) => const Text("कांकरीया सुपरमार्केट"),
+          errorBuilder: (_, __, ___) => const Text("SuperMarket"),
         ),
         actions: [
           IconButton(
