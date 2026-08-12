@@ -35,7 +35,7 @@ class QuickMartApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'कांकरीया सुपरमार्केट',
+      title: 'SuperMarket',
       debugShowCheckedModeBanner: false,
       scaffoldMessengerKey: PushService.messengerKey,
       theme: ThemeData(
