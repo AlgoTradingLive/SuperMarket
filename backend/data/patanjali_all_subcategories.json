@@ -1,0 +1,134 @@
+[
+  {
+    "id": 1,
+    "name": "Edible Oil",
+    "section": "Natural Food Products",
+    "icon": "https://www.patanjaliayurved.net/assets/product_images/400x400/1747481181KOLHUHOMEIMAGE.webp"
+  },
+  {
+    "id": 2,
+    "name": "Flours",
+    "section": "Natural Food Products",
+    "icon": "https://www.patanjaliayurved.net/assets/product_images/400x400/1783945145besanhomeimage.webp"
+  },
+  {
+    "id": 3,
+    "name": "Dal Pulses",
+    "section": "Natural Food Products",
+    "icon": "https://www.patanjaliayurved.net/assets/product_images/thumbs/400_400_1690959764Moongdaldhuli1kg1.png"
+  },
+  {
+    "id": 4,
+    "name": "Candy",
+    "section": "Natural Food Products",
+    "icon": "https://www.patanjaliayurved.net/assets/product_images/thumbs/400_400_1733916555Belcandy500g1.png"
+  },
+  {
+    "id": 5,
+    "name": "Biscuits and Cookies",
+    "section": "Natural Food Products",
+    "icon": "https://www.patanjaliayurved.net/assets/product_images/thumbs/400_400_1695881848MarieDigestive100g1.png"
+  },
+  {
+    "id": 6,
+    "name": "Spices",
+    "section": "Natural Food Products",
+    "icon": "https://www.patanjaliayurved.net/assets/product_images/thumbs/400_400_1733727856chaatmasala1.png"
+  },
+  {
+    "id": 7,
+    "name": "Herbal Tea",
+    "section": "Natural Food Products",
+    "icon": "https://www.patanjaliayurved.net/assets/product_images/thumbs/400_400_16897520171.png"
+  },
+  {
+    "id": 8,
+    "name": "Tea",
+    "section": "Natural Food Products",
+    "icon": "https://www.patanjaliayurved.net/assets/product_images/400x400/1747385484thumbnail.webp"
+  },
+  {
+    "id": 9,
+    "name": "Jam",
+    "section": "Natural Food Products",
+    "icon": "https://www.patanjaliayurved.net/assets/product_images/400x400/1784031439thumbnail.jpg"
+  },
+  {
+    "id": 10,
+    "name": "Dalia, Poha and Vermicelli",
+    "section": "Natural Food Products",
+    "icon": "https://www.patanjaliayurved.net/assets/product_images/thumbs/400_400_1690278984poha500g1.png"
+  },
+  {
+    "id": 11,
+    "name": "Dried Fruits & Nuts",
+    "section": "Natural Food Products",
+    "icon": "https://www.patanjaliayurved.net/assets/product_images/400x400/1739946869alomondhomeimage.webp"
+  },
+  {
+    "id": 12,
+    "name": "Toothpaste",
+    "section": "Natural Personal Care",
+    "icon": "https://www.patanjaliayurved.net/assets/product_images/400x400/1739858231thumbnail.webp"
+  },
+  {
+    "id": 13,
+    "name": "Face Wash",
+    "section": "Natural Personal Care",
+    "icon": "https://www.patanjaliayurved.net/assets/product_images/400x400/1779963302thumbnail.webp"
+  },
+  {
+    "id": 14,
+    "name": "Shampoo",
+    "section": "Natural Personal Care",
+    "icon": "https://www.patanjaliayurved.net/assets/product_images/400x400/1741857840thumbnail.webp"
+  },
+  {
+    "id": 15,
+    "name": "Body Care",
+    "section": "Natural Personal Care",
+    "icon": "https://www.patanjaliayurved.net/assets/product_images/400x400/1740549367thumbnail.webp"
+  },
+  {
+    "id": 16,
+    "name": "Face Cream",
+    "section": "Natural Personal Care",
+    "icon": "https://www.patanjaliayurved.net/assets/product_images/400x400/1779688569thumbnail.webp"
+  },
+  {
+    "id": 17,
+    "name": "Face Pack",
+    "section": "Natural Personal Care",
+    "icon": "https://www.patanjaliayurved.net/assets/product_images/400x400/1781501732thumbnail.webp"
+  },
+  {
+    "id": 18,
+    "name": "Tooth Brush",
+    "section": "Natural Personal Care",
+    "icon": "https://www.patanjaliayurved.net/assets/product_images/400x400/1747657186thumbnail.webp"
+  },
+  {
+    "id": 19,
+    "name": "Hair Oil",
+    "section": "Natural Personal Care",
+    "icon": "https://www.patanjaliayurved.net/assets/product_images/400x400/1766487103thumbnail.webp"
+  },
+  {
+    "id": 20,
+    "name": "Conditioner",
+    "section": "Natural Personal Care",
+    "icon": "https://www.patanjaliayurved.net/assets/product_images/400x400/1739438584thumbnail.webp"
+  },
+  {
+    "id": 21,
+    "name": "Foot Cream",
+    "section": "Natural Personal Care",
+    "icon": "https://www.patanjaliayurved.net/assets/product_images/400x400/1779690068thumbnail.webp"
+  },
+  {
+    "id": 22,
+    "name": "Scrubs",
+    "section": "Natural Personal Care",
+    "icon": "https://www.patanjaliayurved.net/assets/product_images/thumbs/400_400_1689486778ApricotFACESCRUB-60g1.png"
+  }
+]
