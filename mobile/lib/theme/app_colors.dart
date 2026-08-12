@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-/// कांकरीया सुपरमार्केट चे brand colors — logo शी जुळणारे
+/// SuperMarket चे brand colors — logo शी जुळणारे
 class AppColors {
   static const Color primary = Color(0xFF1565C0);   // निळा — header, buttons
   static const Color accent = Color(0xFFD32F2F);    // लाल — offers, discount, wishlist
