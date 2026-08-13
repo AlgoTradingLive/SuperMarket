@@ -293,8 +293,24 @@ router.post("/import-bundle", checkAdmin, async (req, res) => {
         image: p.image,
         inStock: p.inStock !== false,
       }));
+    } else if (bundle === "morebrands") {
+      sectionName = "More Brands";
+      const master = JSON.parse(fs.readFileSync(path.join(DATA_DIR, "master_catalog.json"), "utf-8"));
+      const excludeSections = ["Natural Food Products", "Natural Personal Care"]; // already imported as Patanjali
+      rawProducts = master
+        .filter((p) => !excludeSections.includes(p.section) && p.image)
+        .map((p) => ({
+          name: p.name,
+          subCategory: p.section, // brand name (Suhana Masale, Vatika, Saffola, etc.)
+          section: sectionName,
+          price: p.price,
+          mrp: p.mrp,
+          unit: p.unit,
+          image: p.image,
+          inStock: p.inStock !== false,
+        }));
     } else {
-      return res.status(400).json({ error: "bundle must be 'amul', 'patanjali', or 'tata'" });
+      return res.status(400).json({ error: "bundle must be 'amul', 'patanjali', 'tata', or 'morebrands'" });
     }
 
     // Skip products that already exist in this section (by name, case-insensitive)
