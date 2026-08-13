@@ -57,7 +57,7 @@ class _HomeScreenState extends State<HomeScreen> {
     } catch (e) {
       setState(() {
         error =
-            "Server शी कनेक्ट होत नाहीये.\nथोडं थांबून पुन्हा प्रयत्न करा (free server sleep मधून उठायला ५०+ सेकंद लागू शकतात).";
+            "Server मध्ये अडचण आली आहे.\nथोडं थांबून पुन्हा प्रयत्न करा.";
         loading = false;
       });
     }
