@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import '../models/product.dart';
 import '../services/api_service.dart';
+import 'product_detail_screen.dart';
 
 const kBrandGreen = Color(0xFF2E7D32);
 
@@ -129,7 +130,19 @@ class _SearchScreenState extends State<SearchScreen> {
 
   Widget _productCard(Product p) {
     final qty = widget.cart[p.id]?.qty ?? 0;
-    return Container(
+    return InkWell(
+      borderRadius: BorderRadius.circular(12),
+      onTap: () async {
+        await Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => ProductDetailScreen(
+                product: p, cart: widget.cart, onChangeQty: widget.onChangeQty),
+          ),
+        );
+        setState(() {});
+      },
+      child: Container(
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
@@ -230,6 +243,7 @@ class _SearchScreenState extends State<SearchScreen> {
             ),
           ),
         ],
+      ),
       ),
     );
   }
