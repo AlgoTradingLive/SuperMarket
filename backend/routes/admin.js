@@ -280,8 +280,21 @@ router.post("/import-bundle", checkAdmin, async (req, res) => {
         image: p.image,
         inStock: p.inStock !== false,
       }));
+    } else if (bundle === "tata") {
+      sectionName = "Tata NutriKorner";
+      const products = JSON.parse(fs.readFileSync(path.join(DATA_DIR, "tata_nutrikorner_products.json"), "utf-8"));
+      rawProducts = products.map((p) => ({
+        name: p.name,
+        subCategory: p.section, // Tata's "section" field is the broad grouping (Tea, Masala, Ghee, etc.)
+        section: sectionName,
+        price: p.price,
+        mrp: p.mrp,
+        unit: p.unit,
+        image: p.image,
+        inStock: p.inStock !== false,
+      }));
     } else {
-      return res.status(400).json({ error: "bundle must be 'amul' or 'patanjali'" });
+      return res.status(400).json({ error: "bundle must be 'amul', 'patanjali', or 'tata'" });
     }
 
     // Skip products that already exist in this section (by name, case-insensitive)
