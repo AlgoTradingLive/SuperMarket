@@ -7,6 +7,7 @@ import 'products_screen.dart';
 import 'app_drawer.dart';
 import 'category_screen.dart';
 import 'search_screen.dart';
+import 'product_detail_screen.dart';
 
 const kBrandGreen = Color(0xFF2E7D32);
 const kBrandGreenLight = Color(0xFFE8F5E9);
@@ -458,7 +459,19 @@ class _HomeScreenState extends State<HomeScreen> {
               itemBuilder: (_, i) {
                 final p = offerProducts[i];
                 final qty = cart[p.id]?.qty ?? 0;
-                return Container(
+                return InkWell(
+                  borderRadius: BorderRadius.circular(12),
+                  onTap: () async {
+                    await Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => ProductDetailScreen(
+                            product: p, cart: cart, onChangeQty: _changeQty),
+                      ),
+                    );
+                    setState(() {});
+                  },
+                  child: Container(
                   width: 140,
                   margin: const EdgeInsets.only(right: 10),
                   decoration: BoxDecoration(
@@ -578,6 +591,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       ),
                     ],
+                  ),
                   ),
                 );
               },
