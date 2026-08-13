@@ -29,6 +29,12 @@ app.use("/api/admin", adminRouter);
 app.use("/api/payment", paymentRouter);
 app.use("/api/device-token", deviceTokenRouter);
 
+// Lightweight health-check for an external uptime pinger (e.g. cron-job.org)
+// to hit every ~10 min — keeps the free Render instance from spinning down.
+app.get("/ping", (req, res) => {
+  res.status(200).send("ok");
+});
+
 // Admin panel page
 app.get("/admin", (req, res) => {
   res.sendFile(path.join(__dirname, "admin.html"));
