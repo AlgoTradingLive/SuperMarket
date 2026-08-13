@@ -241,7 +241,7 @@ router.put("/orders/:id", checkAdmin, async (req, res) => {
   res.json(order);
 });
 
-// POST /api/admin/import-bundle  { bundle: "amul" | "patanjali" }
+// POST /api/admin/import-bundle  { bundle: "amul" | "patanjali" | "tata" | "nutraj" | "morebrands" }
 // Bulk-imports a pre-prepared brand product dataset (bundled JSON files
 // shipped with the backend) into a dedicated top-level "section" for that brand.
 router.post("/import-bundle", checkAdmin, async (req, res) => {
@@ -293,6 +293,19 @@ router.post("/import-bundle", checkAdmin, async (req, res) => {
         image: p.image,
         inStock: p.inStock !== false,
       }));
+    } else if (bundle === "nutraj") {
+      sectionName = "Nutraj";
+      const products = JSON.parse(fs.readFileSync(path.join(DATA_DIR, "nutraj_products_clean.json"), "utf-8"));
+      rawProducts = products.map((p) => ({
+        name: p.name,
+        subCategory: p.section, // Nutraj's "section" field is the broad grouping (Walnuts, Almonds, Pistachio, etc.)
+        section: sectionName,
+        price: p.price,
+        mrp: p.mrp,
+        unit: p.unit,
+        image: p.image,
+        inStock: p.inStock !== false,
+      }));
     } else if (bundle === "morebrands") {
       sectionName = "More Brands";
       const master = JSON.parse(fs.readFileSync(path.join(DATA_DIR, "master_catalog.json"), "utf-8"));
@@ -310,7 +323,7 @@ router.post("/import-bundle", checkAdmin, async (req, res) => {
           inStock: p.inStock !== false,
         }));
     } else {
-      return res.status(400).json({ error: "bundle must be 'amul', 'patanjali', 'tata', or 'morebrands'" });
+      return res.status(400).json({ error: "bundle must be 'amul', 'patanjali', 'tata', 'nutraj', or 'morebrands'" });
     }
 
     // Skip products that already exist in this section (by name, case-insensitive)
