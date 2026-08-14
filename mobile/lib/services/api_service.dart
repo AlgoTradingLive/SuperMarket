@@ -27,6 +27,20 @@ class ApiService {
     throw Exception("Products load करता आले नाहीत");
   }
 
+  // Only discounted products — used by the home screen's "deals" row so it
+  // doesn't have to download the entire catalog (which has grown a lot
+  // after the brand-bundle imports) just to find a handful of items.
+  static Future<List<Product>> fetchDeals() async {
+    final uri = Uri.parse("$baseUrl/products").replace(queryParameters: {"deals": "true"});
+    final res = await http.get(uri).timeout(const Duration(seconds: 60));
+
+    if (res.statusCode == 200) {
+      final List data = jsonDecode(res.body);
+      return data.map((e) => Product.fromJson(e)).toList();
+    }
+    throw Exception("Deals load करता आले नाहीत");
+  }
+
   static Future<Map<String, List<Subcategory>>> fetchSubcategories() async {
     final uri = Uri.parse("$baseUrl/subcategories");
     final res = await http.get(uri).timeout(const Duration(seconds: 60));

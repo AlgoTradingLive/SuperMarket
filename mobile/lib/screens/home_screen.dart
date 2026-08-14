@@ -47,8 +47,7 @@ class _HomeScreenState extends State<HomeScreen> {
     });
     try {
       final data = await ApiService.fetchSubcategories();
-      final allProducts = await ApiService.fetchProducts();
-      final deals = allProducts.where((p) => p.discountPercent > 0).toList();
+      final deals = await ApiService.fetchDeals();
       setState(() {
         sections = data;
         offerProducts = deals;
