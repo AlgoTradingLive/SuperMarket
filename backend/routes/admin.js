@@ -374,68 +374,49 @@ router.post("/import-bundle", checkAdmin, async (req, res) => {
 });
 
 // POST /api/admin/reclassify-brands
-// Moves products currently grouped under brand-only sections (Amul, Patanjali,
-// Tata NutriKorner) into our regular category taxonomy (e.g. Personal Care,
-// Dairy, Masala & Spices) so all brands mix together under one category,
-// instead of each brand having its own separate section.
+// Moves products currently sitting under brand-only sections (Amul, Patanjali,
+// Tata NutriKorner, Nutraj, More Brands) into our regular category taxonomy
+// (Tea & Coffee, Pulses, Personal Care, etc.) so every brand's tea/coffee,
+// dal, masala etc. shows up mixed together under ONE category — instead of
+// each brand only ever showing its own products.
+//
+// Classification is done from the PRODUCT NAME (not the imported subCategory
+// field), because that field means different things per source: Amul/Tata's
+// is a real product-type grouping, but master_catalog's ("More Brands") is
+// just the manufacturer's brand name (e.g. "Suhana Masale", "Vatika") — a
+// name-based keyword match is the one thing that works the same way across
+// every source.
 router.post("/reclassify-brands", checkAdmin, async (req, res) => {
   const db = req.app.locals.db;
 
-  // Map: current subCategory (as imported) -> { section, subCategory } in our app taxonomy.
-  // Reuses existing categories wherever a good match exists; a few new ones are
-  // introduced only where nothing suitable already existed.
-  const MAP = {
-    // ---- Patanjali ----
-    "Edible Oil": { section: "Grocery & Kitchen", subCategory: "Edible Oil & Ghee" },
-    "Flours": { section: "Grocery & Kitchen", subCategory: "Flours & Atta" },
-    "Dal Pulses": { section: "Grocery & Kitchen", subCategory: "Pulses" },
-    "Candy": { section: "Snacking & Munching", subCategory: "Chocolates Candies & Jellys" },
-    "Biscuits and Cookies": { section: "Snacking & Munching", subCategory: "Biscuits & Cookies" },
-    "Spices": { section: "Grocery & Kitchen", subCategory: "Masala & Spices" },
-    "Herbal Tea": { section: "Grocery & Kitchen", subCategory: "Tea & Coffee" },
-    "Tea": { section: "Grocery & Kitchen", subCategory: "Tea & Coffee" },
-    "Jam": { section: "Daily Essentials", subCategory: "Jam & Spreads" },
-    "Dalia, Poha and Vermicelli": { section: "Grocery & Kitchen", subCategory: "Cereals & Millets" },
-    "Dried Fruits & Nuts": { section: "Grocery & Kitchen", subCategory: "Dry Fruits & Nuts" },
-    "Tooth Brush": { section: "Daily Essentials", subCategory: "Personal Care" },
-    "Toothpaste": { section: "Daily Essentials", subCategory: "Personal Care" },
-    "Face Cream": { section: "Daily Essentials", subCategory: "Personal Care" },
-    "Body Care": { section: "Daily Essentials", subCategory: "Personal Care" },
-    "Face Wash": { section: "Daily Essentials", subCategory: "Personal Care" },
-    "Foot Cream": { section: "Daily Essentials", subCategory: "Personal Care" },
-    "Hair Oil": { section: "Daily Essentials", subCategory: "Personal Care" },
-    "Scrubs": { section: "Daily Essentials", subCategory: "Personal Care" },
-    "Face Pack": { section: "Daily Essentials", subCategory: "Personal Care" },
-    "Conditioner": { section: "Daily Essentials", subCategory: "Personal Care" },
-    "Shampoo": { section: "Daily Essentials", subCategory: "Personal Care" },
-    // ---- Amul (their "section" field became our subCategory on import) ----
-    "Milk": { section: "Daily Essentials", subCategory: "Dairy" },
-    "Fresh Cream": { section: "Daily Essentials", subCategory: "Dairy" },
-    "Panchamrit": { section: "Daily Essentials", subCategory: "Dairy" },
-    "Milk Powders": { section: "Daily Essentials", subCategory: "Dairy" },
-    "Camel Milk": { section: "Daily Essentials", subCategory: "Dairy" },
-    "Ghee": { section: "Grocery & Kitchen", subCategory: "Edible Oil & Ghee" },
-    "Protein": { section: "Daily Essentials", subCategory: "Health & Protein" },
-    "Organic": { section: "Grocery & Kitchen", subCategory: "Organic Products" },
-    "Kitchen Essentials": { section: "Grocery & Kitchen", subCategory: "Kitchen Essentials" },
-    "Tea & Snacks": { section: "Daily Essentials", subCategory: "Beverages" },
-    "Beverages": { section: "Daily Essentials", subCategory: "Beverages" },
-    "Chocolates": { section: "Snacking & Munching", subCategory: "Chocolates Candies & Jellys" },
-    "Sweets": { section: "Snacking & Munching", subCategory: "Chocolates Candies & Jellys" },
-    "Cake": { section: "Daily Essentials", subCategory: "Bakery" },
-    "Infant Food": { section: "Daily Essentials", subCategory: "Baby Care" },
-    // ---- Tata NutriKorner (their "section" field became our subCategory on import) ----
-    "Tea Coffee & Beverages": { section: "Grocery & Kitchen", subCategory: "Tea & Coffee" },
-    "Instant Foods": { section: "Snacking & Munching", subCategory: "Instant Foods" },
-    "Dry Fruits & Seeds": { section: "Grocery & Kitchen", subCategory: "Dry Fruits & Nuts" },
-    "Masala & Spices": { section: "Grocery & Kitchen", subCategory: "Masala & Spices" },
-    "Atta Rice & Dal": { section: "Grocery & Kitchen", subCategory: "Cereals & Millets" },
-    "Oils & Ghee": { section: "Grocery & Kitchen", subCategory: "Edible Oil & Ghee" },
-    "Sauces & Spreads": { section: "Grocery & Kitchen", subCategory: "Sauces & Spreads" },
-    "Breakfast Essentials": { section: "Snacking & Munching", subCategory: "Breakfast Cereals" },
-  };
+  // Ordered most-specific-first — e.g. "Breakfast Cereals" (corn flakes) is
+  // checked before the broad "Cereals & Millets" (atta/rice) so corn flakes
+  // don't get swept into the grain aisle.
+  const RULES = [
+    [/dish\s?wash/i, { section: "Home Supplies", subCategory: "Dishwashers" }],
+    [/detergent|fabric\s?(conditioner|softener|care)|washing\s?powder|surf\s?excel/i, { section: "Home Supplies", subCategory: "Detergent & Fabric Care" }],
+    [/floor\s?clean|surface\s?clean|toilet\s?clean|\bphenyl\b|harpic|all\s?purpose\s?clean/i, { section: "Home Supplies", subCategory: "All Purpose Cleaners" }],
+    [/shampoo|conditioner|toothpaste|tooth\s?brush|face\s?wash|face\s?cream|body\s?wash|body\s?lotion|hair\s?oil|\bscrub|face\s?pack|deodorant|talcum|sanitizer|\bsoap\b|skin\s?care/i, { section: "Daily Essentials", subCategory: "Personal Care" }],
+    [/corn\s?flakes|muesli|granola|\boats\b|breakfast\s?cereal/i, { section: "Snacking & Munching", subCategory: "Breakfast Cereals" }],
+    [/biscuit|cookie|\brusk\b|cracker/i, { section: "Snacking & Munching", subCategory: "Biscuits & Cookies" }],
+    [/\bchips\b|wafer|namkeen|bhujia|crisps/i, { section: "Snacking & Munching", subCategory: "Chips & Crisps" }],
+    [/chocolate|\bcandy\b|\bjelly\b|toffee|eclair/i, { section: "Snacking & Munching", subCategory: "Chocolates Candies & Jellys" }],
+    [/\btea\b|\bcoffee\b|\bchai\b/i, { section: "Grocery & Kitchen", subCategory: "Tea & Coffee" }],
+    [/\bsugar\b|jaggery|\bgur\b/i, { section: "Grocery & Kitchen", subCategory: "Sugar & Jaggery" }],
+    [/almond|cashew|walnut|raisin|kismis|pista|dry\s?fruit|anjeer|\bdates?\b|khajur/i, { section: "Grocery & Kitchen", subCategory: "Dry Fruits & Nuts" }],
+    [/\bdal\b|\bdaal\b|chana|moong|\btoor\b|arhar|\burad\b|masoor|rajma|\bbesan\b/i, { section: "Grocery & Kitchen", subCategory: "Pulses" }],
+    [/masala|\bspice/i, { section: "Grocery & Kitchen", subCategory: "Masala & Spices" }],
+    [/\bghee\b|edible\s?oil|cooking\s?oil|mustard\s?oil|sunflower\s?oil|groundnut\s?oil|olive\s?oil/i, { section: "Grocery & Kitchen", subCategory: "Edible Oil & Ghee" }],
+    [/\bmilk\b|paneer|\bcurd\b|yogurt|\bcheese\b|\bbutter\b|\bcream\b/i, { section: "Daily Essentials", subCategory: "Dairy" }],
+    [/\bbread\b|\bbun\b|\bcake\b|bakery/i, { section: "Daily Essentials", subCategory: "Bakery" }],
+    [/\batta\b|\bflour\b|\brice\b|\bpoha\b|millet|jowar|bajra|\bragi\b|\bsuji\b|\brava\b|sooji|vermicelli|\bdalia\b/i, { section: "Grocery & Kitchen", subCategory: "Cereals & Millets" }],
+    [/\bsauce\b|ketchup|\bspread\b|\bjam\b/i, { section: "Grocery & Kitchen", subCategory: "Sauces & Spreads" }],
+    [/protein|\bwhey\b|health\s?drink|nutrition/i, { section: "Daily Essentials", subCategory: "Health & Protein" }],
+    [/\binfant\b|\bbaby\b/i, { section: "Daily Essentials", subCategory: "Baby Care" }],
+    [/instant\s?(food|noodle|soup|mix)/i, { section: "Snacking & Munching", subCategory: "Instant Foods" }],
+  ];
 
-  const BRAND_SECTIONS = ["Amul", "Patanjali", "Tata NutriKorner"];
+  const BRAND_SECTIONS = ["Amul", "Patanjali", "Tata NutriKorner", "Nutraj", "More Brands"];
   const products = await db.collection("products").find({ section: { $in: BRAND_SECTIONS } }).toArray();
 
   let updated = 0;
@@ -443,11 +424,12 @@ router.post("/reclassify-brands", checkAdmin, async (req, res) => {
   const touchedSubcats = new Set(); // "subCategory|section"
 
   for (const p of products) {
-    const target = MAP[p.subCategory];
-    if (!target) {
+    const match = RULES.find(([regex]) => regex.test(p.name));
+    if (!match) {
       skipped++;
       continue;
     }
+    const target = match[1];
     await db.collection("products").updateOne(
       { id: p.id },
       { $set: { section: target.section, subCategory: target.subCategory } }
@@ -473,14 +455,24 @@ router.post("/reclassify-brands", checkAdmin, async (req, res) => {
   }
   if (newSubcats.length) await db.collection("subcategories").insertMany(newSubcats);
 
-  // Remove the now-empty brand-only subcategory entries (Amul/Patanjali/Tata NutriKorner)
-  const removed = await db.collection("subcategories").deleteMany({ section: { $in: BRAND_SECTIONS } });
+  // Remove brand-only subcategory entries that no longer have any products
+  // left in them (some products may have been skipped/unmatched and stay
+  // put, so only clean up ones that are now truly empty).
+  const brandSubcats = await db.collection("subcategories").find({ section: { $in: BRAND_SECTIONS } }).toArray();
+  let removedCount = 0;
+  for (const s of brandSubcats) {
+    const stillHasProducts = await db.collection("products").countDocuments({ subCategory: s.name, section: s.section });
+    if (stillHasProducts === 0) {
+      await db.collection("subcategories").deleteOne({ id: s.id });
+      removedCount++;
+    }
+  }
 
   res.json({
     productsUpdated: updated,
     productsSkipped: skipped,
     newSubcategoriesCreated: newSubcats.length,
-    oldBrandSubcategoriesRemoved: removed.deletedCount,
+    oldBrandSubcategoriesRemoved: removedCount,
   });
 });
 

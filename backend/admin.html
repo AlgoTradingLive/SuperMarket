@@ -77,6 +77,12 @@
         <button onclick="importBundle('morebrands')">Import More Brands (800 products)</button>
       </div>
       <div id="bundleStatus" style="margin-top:10px;font-size:13px;"></div>
+
+      <hr style="margin:24px 0;border:none;border-top:1px solid #ddd;">
+      <h3>Mix Brands Into Existing Categories</h3>
+      <p style="font-size:13px;color:#666">वरचे brand imports सध्या त्यांच्या स्वतःच्या वेगळ्या section मध्ये पडून आहेत (उदा. सगळे Amul products "Amul" खाली, सगळे Tata "Tata NutriKorner" खाली). हे बटण त्यांना ओळखून (उदा. "Tea", "Dal", "Masala" वगैरे नावावरून) योग्य त्या मूळ category खाली टाकतं — म्हणजे "Tea & Coffee" खाली Amul + Patanjali + Tata + इतर सगळ्यांचा tea/coffee एकत्र दिसेल.</p>
+      <button onclick="reclassifyBrands()">Mix All Brands Into Categories</button>
+      <div id="reclassifyStatus" style="margin-top:10px;font-size:13px;"></div>
     </div>
 
     <div id="manageTab" class="hidden">
@@ -289,6 +295,23 @@ function importBundle(bundle) {
     statusEl.textContent = `✅ ${data.section}: ${data.productsAdded} products, ${data.subcategoriesAdded} नवीन categories add झाल्या.`;
   }).catch(() => {
     statusEl.textContent = "❌ Import अयशस्वी झालं.";
+  });
+}
+
+function reclassifyBrands() {
+  const statusEl = document.getElementById('reclassifyStatus');
+  statusEl.textContent = "चालू आहे... थोडा वेळ लागेल (सगळे brand products तपासले जातायत).";
+  fetch(API + "/admin/reclassify-brands", {
+    method: "POST",
+    headers: { "x-admin-key": adminKey }
+  }).then(r => r.json()).then(data => {
+    if (data.error) {
+      statusEl.textContent = "❌ Error: " + data.error;
+      return;
+    }
+    statusEl.textContent = `✅ ${data.productsUpdated} products योग्य category मध्ये हलवले, ${data.productsSkipped} ओळखता आले नाहीत (तसेच राहिले), ${data.newSubcategoriesCreated} नवीन categories तयार झाल्या, ${data.oldBrandSubcategoriesRemoved} रिकाम्या brand-categories काढून टाकल्या.`;
+  }).catch(() => {
+    statusEl.textContent = "❌ अयशस्वी झालं.";
   });
 }
 
