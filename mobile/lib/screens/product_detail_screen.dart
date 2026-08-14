@@ -33,10 +33,11 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
 
   Future<void> _loadRelated() async {
     try {
-      final list = await ApiService.fetchProducts(
+      final list = await ApiService.fetchRelated(
+        name: widget.product.name,
         subCategory: widget.product.subCategory,
+        excludeId: widget.product.id,
       );
-      list.removeWhere((p) => p.id == widget.product.id);
       if (!mounted) return;
       setState(() => related = list);
     } catch (_) {

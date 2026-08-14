@@ -41,6 +41,28 @@ class ApiService {
     throw Exception("Deals load करता आले नाहीत");
   }
 
+  // "You might like" — matches by product type/keywords across ALL brands,
+  // not just the same subCategory (which is brand-specific naming, so an
+  // exact match would only ever surface the same brand's own products).
+  static Future<List<Product>> fetchRelated({
+    required String name,
+    required String subCategory,
+    required int excludeId,
+  }) async {
+    final uri = Uri.parse("$baseUrl/products/related").replace(queryParameters: {
+      "name": name,
+      "subCategory": subCategory,
+      "excludeId": excludeId.toString(),
+    });
+    final res = await http.get(uri).timeout(const Duration(seconds: 60));
+
+    if (res.statusCode == 200) {
+      final List data = jsonDecode(res.body);
+      return data.map((e) => Product.fromJson(e)).toList();
+    }
+    throw Exception("Related products load करता आले नाहीत");
+  }
+
   static Future<Map<String, List<Subcategory>>> fetchSubcategories() async {
     final uri = Uri.parse("$baseUrl/subcategories");
     final res = await http.get(uri).timeout(const Duration(seconds: 60));
