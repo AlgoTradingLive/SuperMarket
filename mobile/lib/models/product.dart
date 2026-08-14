@@ -32,12 +32,8 @@ class Product {
       name: json['name'] ?? '',
       subCategory: json['subCategory'] ?? '',
       section: json['section'] ?? '',
-      price: (json['price'] ?? 0) is int
-          ? json['price']
-          : (json['price'] as num).toInt(),
-      mrp: (json['mrp'] ?? 0) is int
-          ? json['mrp']
-          : (json['mrp'] as num).toInt(),
+      price: json['price'] == null ? 0 : (json['price'] as num).toInt(),
+      mrp: json['mrp'] == null ? 0 : (json['mrp'] as num).toInt(),
       unit: json['unit'] ?? '',
       image: json['image'] ?? '',
       inStock: json['inStock'] ?? true,
