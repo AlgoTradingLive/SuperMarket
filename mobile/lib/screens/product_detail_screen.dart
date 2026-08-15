@@ -290,6 +290,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
           const SizedBox(height: 20),
         ],
       ),
+      bottomNavigationBar: _buildCartBar(),
     );
   }
 
@@ -374,7 +375,6 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
           ],
         ),
       ),
-      bottomNavigationBar: _buildCartBar(),
     );
   }
 
