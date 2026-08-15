@@ -176,6 +176,52 @@ router.post("/products", checkAdmin, async (req, res) => {
   res.status(201).json(clean);
 });
 
+// POST /api/admin/bulk-discount
+// { discountPercent, section?, subCategory?, productIds? }
+// Applies ONE discount % to a whole batch of products at once — run it once
+// per group (e.g. "Tea & Coffee" at 20%, then "Pulses" at 15%) to give
+// different categories different discounts without editing each product.
+// Uses each product's mrp as the base (setting mrp = current price first if
+// mrp was never set, so we don't lose the original price), then sets
+// price = mrp * (1 - discountPercent/100).
+router.post("/bulk-discount", checkAdmin, async (req, res) => {
+  const db = req.app.locals.db;
+  const { discountPercent, section, subCategory, productIds } = req.body;
+
+  const pct = Number(discountPercent);
+  if (!Number.isFinite(pct) || pct < 0 || pct > 95) {
+    return res.status(400).json({ error: "discountPercent must be a number between 0 and 95" });
+  }
+
+  const query = {};
+  if (Array.isArray(productIds) && productIds.length) {
+    query.id = { $in: productIds.map(Number) };
+  } else {
+    if (!section) return res.status(400).json({ error: "Provide either section (with optional subCategory) or productIds" });
+    query.section = section;
+    if (subCategory) query.subCategory = subCategory;
+  }
+
+  const products = await db.collection("products").find(query).toArray();
+  let updated = 0;
+
+  for (const p of products) {
+    // If mrp was never set (or is 0/less than price, e.g. from a brand
+    // import with no discount data), treat the current price as the real
+    // MRP so we discount from the true original price, not a stale one.
+    const baseMrp = p.mrp && p.mrp >= p.price ? p.mrp : p.price;
+    if (!baseMrp) continue; // nothing to discount from
+    const newPrice = Math.round(baseMrp * (1 - pct / 100));
+    await db.collection("products").updateOne(
+      { id: p.id },
+      { $set: { mrp: baseMrp, price: newPrice } }
+    );
+    updated++;
+  }
+
+  res.json({ productsUpdated: updated, discountPercent: pct });
+});
+
 // PUT /api/admin/products/:id -> edit
 router.put("/products/:id", checkAdmin, async (req, res) => {
   const db = req.app.locals.db;

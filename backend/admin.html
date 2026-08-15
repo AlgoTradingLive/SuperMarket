@@ -83,6 +83,21 @@
       <p style="font-size:13px;color:#666">वरचे brand imports सध्या त्यांच्या स्वतःच्या वेगळ्या section मध्ये पडून आहेत (उदा. सगळे Amul products "Amul" खाली, सगळे Tata "Tata NutriKorner" खाली). हे बटण त्यांना ओळखून (उदा. "Tea", "Dal", "Masala" वगैरे नावावरून) योग्य त्या मूळ category खाली टाकतं — म्हणजे "Tea & Coffee" खाली Amul + Patanjali + Tata + इतर सगळ्यांचा tea/coffee एकत्र दिसेल.</p>
       <button onclick="reclassifyBrands()">Mix All Brands Into Categories</button>
       <div id="reclassifyStatus" style="margin-top:10px;font-size:13px;"></div>
+
+      <hr style="margin:24px 0;border:none;border-top:1px solid #ddd;">
+      <h3>Bulk Discount</h3>
+      <p style="font-size:13px;color:#666">एका category (किंवा subcategory) मधल्या सगळ्या products ना एकाच वेळी discount % द्या. वेगवेगळ्या categories ला वेगळा % द्यायचा असेल तर हे प्रत्येक वेळी वेगळं category निवडून पुन्हा वापरा (उदा. आधी "Tea & Coffee" निवडून 20%, मग "Pulses" निवडून 15%).</p>
+      <div class="row-actions" style="align-items:center;">
+        <select id="bdSection" onchange="onBdSectionChange()">
+          <option value="">-- Section निवडा --</option>
+        </select>
+        <select id="bdSubcategory">
+          <option value="">(संपूर्ण section — सगळ्या subcategories)</option>
+        </select>
+        <input id="bdPercent" type="number" min="0" max="95" placeholder="Discount %" style="width:110px;">
+        <button onclick="applyBulkDiscount()">Apply Discount</button>
+      </div>
+      <div id="bulkDiscountStatus" style="margin-top:10px;font-size:13px;"></div>
     </div>
 
     <div id="manageTab" class="hidden">
@@ -150,6 +165,51 @@ function login() {
 function populateSubcatDropdown() {
   const sel = document.getElementById('modalSubcat');
   sel.innerHTML = subcategories.map(s => `<option value="${s.name}|${s.section}">${s.name} (${s.section})</option>`).join('');
+
+  const bdSection = document.getElementById('bdSection');
+  const sections = [...new Set(subcategories.map(s => s.section))].sort();
+  bdSection.innerHTML = '<option value="">-- Section निवडा --</option>' +
+    sections.map(sec => `<option value="${sec}">${sec}</option>`).join('');
+  document.getElementById('bdSubcategory').innerHTML = '<option value="">(संपूर्ण section — सगळ्या subcategories)</option>';
+}
+
+function onBdSectionChange() {
+  const section = document.getElementById('bdSection').value;
+  const sub = document.getElementById('bdSubcategory');
+  const matching = subcategories.filter(s => s.section === section);
+  sub.innerHTML = '<option value="">(संपूर्ण section — सगळ्या subcategories)</option>' +
+    matching.map(s => `<option value="${s.name}">${s.name}</option>`).join('');
+}
+
+function applyBulkDiscount() {
+  const statusEl = document.getElementById('bulkDiscountStatus');
+  const section = document.getElementById('bdSection').value;
+  const subCategory = document.getElementById('bdSubcategory').value;
+  const discountPercent = Number(document.getElementById('bdPercent').value);
+
+  if (!section) { statusEl.textContent = "⚠️ आधी Section निवडा."; return; }
+  if (!discountPercent || discountPercent <= 0 || discountPercent > 95) {
+    statusEl.textContent = "⚠️ Discount % 1 ते 95 च्या मध्ये टाका.";
+    return;
+  }
+  const label = subCategory ? `${subCategory} (${section})` : `संपूर्ण ${section}`;
+  if (!confirm(`${label} मधल्या सगळ्या products ना ${discountPercent}% discount द्यायचा आहे. पुढे जाऊ?`)) return;
+
+  statusEl.textContent = "चालू आहे...";
+  fetch(API + "/admin/bulk-discount", {
+    method: "POST",
+    headers: { "Content-Type": "application/json", "x-admin-key": adminKey },
+    body: JSON.stringify({ discountPercent, section, subCategory: subCategory || undefined })
+  }).then(r => r.json()).then(data => {
+    if (data.error) {
+      statusEl.textContent = "❌ Error: " + data.error;
+      return;
+    }
+    statusEl.textContent = `✅ ${data.productsUpdated} products ना ${data.discountPercent}% discount दिला.`;
+    loadProducts();
+  }).catch(() => {
+    statusEl.textContent = "❌ अयशस्वी झालं.";
+  });
 }
 
 function switchTab(tab) {
