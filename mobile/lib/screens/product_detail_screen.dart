@@ -374,6 +374,93 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
           ],
         ),
       ),
+      bottomNavigationBar: _buildCartBar(),
+    );
+  }
+
+  Widget? _buildCartBar() {
+    final items = widget.cart.values.toList();
+    if (items.isEmpty) return null;
+
+    final totalQty = items.fold(0, (sum, c) => sum + c.qty);
+    final totalPrice = items.fold(0, (sum, c) => sum + c.total);
+    final totalSavings = items.fold(
+        0, (sum, c) => sum + (c.product.mrp - c.product.price) * c.qty);
+
+    return SafeArea(
+      top: false,
+      child: Container(
+        height: 68,
+        margin: const EdgeInsets.fromLTRB(12, 0, 12, 12),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+        decoration: BoxDecoration(
+          color: kBrandGreen,
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Row(
+          children: [
+            Stack(
+              clipBehavior: Clip.none,
+              children: [
+                const Icon(Icons.shopping_cart, color: Colors.white),
+                Positioned(
+                  top: -6,
+                  right: -6,
+                  child: Container(
+                    padding: const EdgeInsets.all(3),
+                    decoration: const BoxDecoration(
+                      color: Colors.orange,
+                      shape: BoxShape.circle,
+                    ),
+                    child: Text('$totalQty',
+                        style: const TextStyle(fontSize: 10, color: Colors.white)),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text("₹$totalPrice Cart Total",
+                      style: const TextStyle(
+                          color: Colors.white, fontWeight: FontWeight.bold, fontSize: 15)),
+                  Text(
+                    "$totalQty Item${totalQty > 1 ? 's' : ''}"
+                    "${totalSavings > 0 ? ' • ₹$totalSavings Saved' : ''}",
+                    style: const TextStyle(color: Colors.white70, fontSize: 12),
+                  ),
+                ],
+              ),
+            ),
+            OutlinedButton(
+              style: OutlinedButton.styleFrom(
+                backgroundColor: Colors.white,
+                side: BorderSide.none,
+              ),
+              onPressed: () async {
+                await Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) =>
+                        CartScreen(cart: widget.cart, onChangeQty: widget.onChangeQty),
+                  ),
+                );
+                setState(() {});
+              },
+              child: const Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text("CART", style: TextStyle(color: kBrandGreen, fontWeight: FontWeight.bold)),
+                  Icon(Icons.chevron_right, color: kBrandGreen, size: 18),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
