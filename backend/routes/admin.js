@@ -395,25 +395,27 @@ router.post("/reclassify-brands", checkAdmin, async (req, res) => {
   const RULES = [
     [/dish\s?wash/i, { section: "Home Supplies", subCategory: "Dishwashers" }],
     [/detergent|fabric\s?(conditioner|softener|care)|washing\s?powder|surf\s?excel/i, { section: "Home Supplies", subCategory: "Detergent & Fabric Care" }],
-    [/floor\s?clean|surface\s?clean|toilet\s?clean|\bphenyl\b|harpic|all\s?purpose\s?clean/i, { section: "Home Supplies", subCategory: "All Purpose Cleaners" }],
-    [/shampoo|conditioner|toothpaste|tooth\s?brush|face\s?wash|face\s?cream|body\s?wash|body\s?lotion|hair\s?oil|\bscrub|face\s?pack|deodorant|talcum|sanitizer|\bsoap\b|skin\s?care/i, { section: "Daily Essentials", subCategory: "Personal Care" }],
+    [/floor\s?clean|surface\s?clean|toilet\s?clean|\bphenyl\b|harpic|all\s?purpose\s?clean|air\s?freshener|room\s?spray|room\s?mist|odonil|bathroom\s?clean/i, { section: "Home Supplies", subCategory: "All Purpose Cleaners" }],
+    [/shampoo|conditioner|toothpaste|tooth\s?brush|face\s?wash|face\s?cream|body\s?wash|body\s?lotion|hair\s?oil|\bscrub|face\s?pack|deodorant|talcum|sanitizer|\bsoap\b|skin\s?care|personal\s?care|facial\s?kit|sunscreen|\bserum\b|lipstick|nail\s?paint|\bkajal\b|\bbleach\b|hand\s?wash|hair\s?care|body\s?cleanser|shower\s?gel|eye\s?patch|fragrance|\bperfume\b|\bedp\b|moisturi[sz]/i, { section: "Daily Essentials", subCategory: "Personal Care" }],
     [/corn\s?flakes|muesli|granola|\boats\b|breakfast\s?cereal/i, { section: "Snacking & Munching", subCategory: "Breakfast Cereals" }],
     [/biscuit|cookie|\brusk\b|cracker/i, { section: "Snacking & Munching", subCategory: "Biscuits & Cookies" }],
     [/\bchips\b|wafer|namkeen|bhujia|crisps/i, { section: "Snacking & Munching", subCategory: "Chips & Crisps" }],
-    [/chocolate|\bcandy\b|\bjelly\b|toffee|eclair/i, { section: "Snacking & Munching", subCategory: "Chocolates Candies & Jellys" }],
+    [/chocolate|\bcandy\b|\bjelly\b|toffee|eclair|\bmithai\b|sweet|laddoo|jamun|peda|rosogolla|basundi/i, { section: "Snacking & Munching", subCategory: "Chocolates Candies & Jellys" }],
     [/\btea\b|\bcoffee\b|\bchai\b/i, { section: "Grocery & Kitchen", subCategory: "Tea & Coffee" }],
-    [/\bsugar\b|jaggery|\bgur\b/i, { section: "Grocery & Kitchen", subCategory: "Sugar & Jaggery" }],
-    [/almond|cashew|walnut|raisin|kismis|pista|dry\s?fruit|anjeer|\bdates?\b|khajur/i, { section: "Grocery & Kitchen", subCategory: "Dry Fruits & Nuts" }],
-    [/\bdal\b|\bdaal\b|chana|moong|\btoor\b|arhar|\burad\b|masoor|rajma|\bbesan\b/i, { section: "Grocery & Kitchen", subCategory: "Pulses" }],
-    [/masala|\bspice/i, { section: "Grocery & Kitchen", subCategory: "Masala & Spices" }],
-    [/\bghee\b|edible\s?oil|cooking\s?oil|mustard\s?oil|sunflower\s?oil|groundnut\s?oil|olive\s?oil/i, { section: "Grocery & Kitchen", subCategory: "Edible Oil & Ghee" }],
-    [/\bmilk\b|paneer|\bcurd\b|yogurt|\bcheese\b|\bbutter\b|\bcream\b/i, { section: "Daily Essentials", subCategory: "Dairy" }],
+    [/\bsugar\b|jaggery|\bgur\b|\bhoney\b/i, { section: "Grocery & Kitchen", subCategory: "Sugar & Jaggery" }],
+    [/almond|cashew|walnut|raisin|kismis|pista|dry\s?fruit|dried\s?fruit|anjeer|\bdates?\b|khajur|\bseeds?\b|makhana|\bpeanuts?\b|quinoa|munakka/i, { section: "Grocery & Kitchen", subCategory: "Dry Fruits & Nuts" }],
+    [/\bdal\b|\bdaal\b|chana|moong|\btoor\b|arhar|\burad\b|masoor|rajma|\bbesan\b|pulses/i, { section: "Grocery & Kitchen", subCategory: "Pulses" }],
+    [/masala|\bspice|turmeric|haldi|chilli|mirch|dhania|coriander|\bcumin\b|jeera|fennel|mustard.*rai|cardamom|fenugreek|\bhing\b|gond\s?katira|poppy\s?seed|saffron|\bkesar\b|\bsalt\b|methi/i, { section: "Grocery & Kitchen", subCategory: "Masala & Spices" }],
+    [/\bghee\b|edible\s?oil|cooking\s?oil|mustard\s?oil|sunflower\s?oil|groundnut\s?oil|olive\s?oil|sesame\s?oil|coconut\s?oil|safflower|til\s?oil|\boil\b/i, { section: "Grocery & Kitchen", subCategory: "Edible Oil & Ghee" }],
+    [/\bmilk\b|paneer|\bcurd\b|yogurt|\bcheese\b|\bbutter\b|\bcream\b|\blassi\b|dairy\s?whitener|dairy\s?creamer|malai/i, { section: "Daily Essentials", subCategory: "Dairy" }],
     [/\bbread\b|\bbun\b|\bcake\b|bakery/i, { section: "Daily Essentials", subCategory: "Bakery" }],
-    [/\batta\b|\bflour\b|\brice\b|\bpoha\b|millet|jowar|bajra|\bragi\b|\bsuji\b|\brava\b|sooji|vermicelli|\bdalia\b/i, { section: "Grocery & Kitchen", subCategory: "Cereals & Millets" }],
-    [/\bsauce\b|ketchup|\bspread\b|\bjam\b/i, { section: "Grocery & Kitchen", subCategory: "Sauces & Spreads" }],
-    [/protein|\bwhey\b|health\s?drink|nutrition/i, { section: "Daily Essentials", subCategory: "Health & Protein" }],
+    [/\batta\b|\bflour\b|\brice\b|\bpoha\b|millet|jowar|bajra|\bragi\b|\bsuji\b|\brava\b|sooji|vermicelli|\bdalia\b|malted\s?food/i, { section: "Grocery & Kitchen", subCategory: "Cereals & Millets" }],
+    [/\bsauce\b|ketchup|\bspread\b|\bjam\b|pickle|chutney|\bpaste\b|murabba|\bthecha\b|\bachar\b/i, { section: "Grocery & Kitchen", subCategory: "Sauces & Spreads" }],
+    [/protein|\bwhey\b|health\s?drink|nutrition|multivitamin|collagen/i, { section: "Daily Essentials", subCategory: "Health & Protein" }],
     [/\binfant\b|\bbaby\b/i, { section: "Daily Essentials", subCategory: "Baby Care" }],
-    [/instant\s?(food|noodle|soup|mix)/i, { section: "Snacking & Munching", subCategory: "Instant Foods" }],
+    [/instant\s?(food|noodle|soup|mix)|mashed\s?potato|\bnoodles?\b|\bramen\b/i, { section: "Snacking & Munching", subCategory: "Instant Foods" }],
+    [/combo|trial\s?pack/i, { section: "Grocery & Kitchen", subCategory: "Combo Bundle" }],
+    [/kool\s?drink|thandai|beverage|\bjuice\b|mojito|tonic\s?water|ginger\s?ale/i, { section: "Daily Essentials", subCategory: "Beverages" }],
   ];
 
   const BRAND_SECTIONS = ["Amul", "Patanjali", "Tata NutriKorner", "Nutraj", "More Brands"];
@@ -424,7 +426,14 @@ router.post("/reclassify-brands", checkAdmin, async (req, res) => {
   const touchedSubcats = new Set(); // "subCategory|section"
 
   for (const p of products) {
-    const match = RULES.find(([regex]) => regex.test(p.name));
+    // Match on the ORIGINAL imported subCategory + name together — the
+    // subCategory is a real signal for Amul/Patanjali/Tata (e.g. Patanjali's
+    // "Spices" subCategory catches "Cumin Whole" even though the word
+    // "spice" never appears in the product name itself). For "More Brands"
+    // (master_catalog) the subCategory is just the manufacturer's brand
+    // name, not descriptive, so only the product name is used there.
+    const text = p.section === "More Brands" ? p.name : `${p.subCategory || ""} ${p.name}`;
+    const match = RULES.find(([regex]) => regex.test(text));
     if (!match) {
       skipped++;
       continue;
