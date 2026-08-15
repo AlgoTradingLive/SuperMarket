@@ -188,9 +188,9 @@ class _CategoryScreenState extends State<CategoryScreen> {
                       physics: const NeverScrollableScrollPhysics(),
                       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                         crossAxisCount: 3,
-                        mainAxisSpacing: 16,
+                        mainAxisSpacing: 20,
                         crossAxisSpacing: 10,
-                        childAspectRatio: 0.8,
+                        mainAxisExtent: 122,
                       ),
                       itemCount: sections[selectedSection]!.length,
                       itemBuilder: (_, i) {
@@ -198,17 +198,18 @@ class _CategoryScreenState extends State<CategoryScreen> {
                         return InkWell(
                           onTap: () => _openSubcategory(s),
                           child: Column(
+                            mainAxisSize: MainAxisSize.min,
                             children: [
                               ClipRRect(
                                 borderRadius: BorderRadius.circular(10),
                                 child: Image.network(
                                   s.icon,
-                                  height: 70,
-                                  width: 70,
+                                  height: 64,
+                                  width: 64,
                                   fit: BoxFit.cover,
                                   errorBuilder: (_, __, ___) => Container(
-                                    height: 70,
-                                    width: 70,
+                                    height: 64,
+                                    width: 64,
                                     color: Colors.grey.shade200,
                                     child: const Icon(Icons.image_not_supported_outlined),
                                   ),
@@ -220,7 +221,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
                                 textAlign: TextAlign.center,
                                 maxLines: 2,
                                 overflow: TextOverflow.ellipsis,
-                                style: const TextStyle(fontSize: 12),
+                                style: const TextStyle(fontSize: 11, height: 1.15),
                               ),
                             ],
                           ),
