@@ -125,6 +125,26 @@ router.get("/products", checkAdmin, async (req, res) => {
   res.json(products);
 });
 
+// POST /api/admin/rename-stores-to-bestbasket
+// One-time fix: the stores collection was already seeded (before the
+// BestBasket rebrand) with old "V-Mart" names — editing stores.json alone
+// doesn't touch it since seeding only happens once when the collection is
+// empty. This renames every store's "name" field, replacing "V-Mart" with
+// "BestBasket" wherever it appears (addresses/coordinates untouched).
+router.post("/rename-stores-to-bestbasket", checkAdmin, async (req, res) => {
+  const db = req.app.locals.db;
+  const stores = await db.collection("stores").find({}).toArray();
+  let updated = 0;
+  for (const s of stores) {
+    if (s.name && s.name.includes("V-Mart")) {
+      const newName = s.name.replace(/V-Mart/g, "BestBasket");
+      await db.collection("stores").updateOne({ id: s.id }, { $set: { name: newName } });
+      updated++;
+    }
+  }
+  res.json({ storesUpdated: updated });
+});
+
 // GET /api/admin/subcategories
 router.get("/subcategories", checkAdmin, async (req, res) => {
   const db = req.app.locals.db;

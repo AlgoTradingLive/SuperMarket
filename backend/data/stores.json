@@ -1,21 +1,21 @@
 [
   {
     "id": 1,
-    "name": "V-Mart - Anandvalli",
+    "name": "BestBasket - Anandvalli",
     "address": "Menlo Park, Engineer Prakash Chaudhary Marg, Kale Nagar, Balawant Nagar, Anandvalli, Nashik, Maharashtra 422013",
     "latitude": 20.0121,
     "longitude": 73.7458
   },
   {
     "id": 2,
-    "name": "V-Mart - Pathardi Phata",
+    "name": "BestBasket - Pathardi Phata",
     "address": "WQRJ+QPW, Pandav Nagari, Pathardi Phata, Nashik, Maharashtra 422009",
     "latitude": 19.9420,
     "longitude": 73.7818
   },
   {
     "id": 3,
-    "name": "V-Mart - Trimurti Chowk, Cidco",
+    "name": "BestBasket - Trimurti Chowk, Cidco",
     "address": "Datta Mandir Chowk, near Vishal Petrol Pump, Trimurti Chowk, Cidco, Patil Nagar, Nashik, Maharashtra 422009",
     "latitude": 19.9792,
     "longitude": 73.7571
