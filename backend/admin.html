@@ -28,6 +28,8 @@
   .row-actions button { flex: 1 1 calc(50% - 3px); min-width: 60px; padding: 8px 4px; font-size: 11px; }
   #addModal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 20; align-items: center; justify-content: center; }
   #addModal .box { background: white; padding: 20px; border-radius: 10px; width: 90%; max-width: 400px; max-height: 90vh; overflow-y: auto; }
+  #moveModal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 20; align-items: center; justify-content: center; }
+  #moveModal .box { background: white; padding: 20px; border-radius: 10px; width: 90%; max-width: 400px; max-height: 90vh; overflow-y: auto; }
   .hidden { display: none !important; }
 </style>
 </head>
@@ -133,6 +135,19 @@
     <div class="row-actions">
       <button class="secondary" onclick="closeModal()">Cancel</button>
       <button onclick="confirmAdd()">Add Product</button>
+    </div>
+  </div>
+</div>
+
+<div id="moveModal">
+  <div class="box">
+    <h3>Product ची Category बदला</h3>
+    <p id="moveProductName" style="font-weight:bold;"></p>
+    <label>नवीन Subcategory निवडा</label>
+    <select id="moveSubcatSelect"></select>
+    <div class="row-actions">
+      <button class="secondary" onclick="closeMoveModal()">Cancel</button>
+      <button onclick="confirmMove()">Move करा</button>
     </div>
   </div>
 </div>
@@ -488,15 +503,47 @@ function renderManage() {
       <div class="body">
         <div class="name">${p.name}</div>
         <div class="meta">₹${p.price} (MRP ₹${p.mrp}) • ${p.unit}</div>
+        <div class="meta">📁 ${p.subCategory} (${p.section})</div>
         <div class="row-actions">
           <button class="secondary" onclick="editName(${p.id})">Edit Name</button>
           <button class="secondary" onclick="editPrice(${p.id})">Edit Price</button>
           <button class="secondary" onclick="editImage(${p.id})">Edit Photo</button>
+          <button class="secondary" onclick="openMoveModal(${p.id})">Move Category</button>
           <button class="danger" onclick="deleteProduct(${p.id})">Delete</button>
         </div>
       </div>
     </div>
   `).join('');
+}
+
+let pendingMoveProductId = null;
+
+function openMoveModal(id) {
+  const p = allProducts.find(x => x.id === id);
+  pendingMoveProductId = id;
+  document.getElementById('moveProductName').textContent = p.name;
+  const sel = document.getElementById('moveSubcatSelect');
+  sel.innerHTML = subcategories.map(s => {
+    const selected = (s.name === p.subCategory && s.section === p.section) ? 'selected' : '';
+    return `<option value="${s.name}|${s.section}" ${selected}>${s.name} (${s.section})</option>`;
+  }).join('');
+  document.getElementById('moveModal').style.display = 'flex';
+}
+
+function closeMoveModal() {
+  document.getElementById('moveModal').style.display = 'none';
+}
+
+function confirmMove() {
+  const [subCategory, section] = document.getElementById('moveSubcatSelect').value.split('|');
+  fetch(API + "/admin/products/" + pendingMoveProductId, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json", "x-admin-key": adminKey },
+    body: JSON.stringify({ subCategory, section })
+  }).then(() => {
+    closeMoveModal();
+    setTimeout(() => { loadProducts(); setTimeout(renderManage, 400); }, 300);
+  });
 }
 
 function editName(id) {
