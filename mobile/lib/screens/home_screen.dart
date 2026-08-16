@@ -99,6 +99,7 @@ class _HomeScreenState extends State<HomeScreen> {
       MaterialPageRoute(
         builder: (_) => ProductsScreen(
           title: s.name,
+          section: s.section,
           subCategory: s.name,
           cart: cart,
           onChangeQty: _changeQty,
