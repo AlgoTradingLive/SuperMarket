@@ -45,6 +45,18 @@ class QuickMartApp extends StatelessWidget {
         ),
         useMaterial3: true,
       ),
+      // Some phones/tablets have the OS "Larger Text" accessibility setting
+      // turned way up — without a cap, that can blow up card layouts across
+      // the app (text pushing into/clipping images, overflow, etc). Cap it
+      // to a sane range so the app stays visually consistent everywhere.
+      builder: (context, child) {
+        final mq = MediaQuery.of(context);
+        final clampedScaler = mq.textScaler.clamp(minScaleFactor: 0.9, maxScaleFactor: 1.15);
+        return MediaQuery(
+          data: mq.copyWith(textScaler: clampedScaler),
+          child: child!,
+        );
+      },
       home: const HomeScreen(),
     );
   }

@@ -184,10 +184,17 @@ class _ProductsScreenState extends State<ProductsScreen> {
     if (products.isEmpty) {
       return const Center(child: Text("Products सापडले नाहीत"));
     }
+    // More columns on wider screens (tablets) so each card stays a
+    // reasonable width — a fixed 2-column grid on a tablet makes each card
+    // (and its image) very wide, which combined with a fixed image height
+    // was cropping most of the photo away.
+    final screenWidth = MediaQuery.of(context).size.width;
+    final crossAxisCount = screenWidth >= 900 ? 4 : (screenWidth >= 600 ? 3 : 2);
+
     return GridView.builder(
       padding: const EdgeInsets.all(12),
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: crossAxisCount,
         mainAxisExtent: 260,
         crossAxisSpacing: 12,
         mainAxisSpacing: 12,
@@ -224,29 +231,32 @@ class _ProductsScreenState extends State<ProductsScreen> {
                 children: [
                   ClipRRect(
                     borderRadius: BorderRadius.circular(8),
-                    child: Image.network(
-                      p.image,
-                      height: 110,
-                      width: double.infinity,
-                      fit: BoxFit.cover,
-                      loadingBuilder: (context, child, progress) {
-                        if (progress == null) return child;
-                        return Container(
-                          height: 110,
-                          color: Colors.grey.shade100,
-                          child: const Center(
-                            child: SizedBox(
-                              height: 20,
-                              width: 20,
-                              child: CircularProgressIndicator(strokeWidth: 2),
+                    child: AspectRatio(
+                      // Square-ish, and scales with the card's own width —
+                      // so the whole product photo shows on every screen
+                      // size instead of a fixed-height crop.
+                      aspectRatio: 1.3,
+                      child: Image.network(
+                        p.image,
+                        width: double.infinity,
+                        fit: BoxFit.contain,
+                        loadingBuilder: (context, child, progress) {
+                          if (progress == null) return child;
+                          return Container(
+                            color: Colors.grey.shade100,
+                            child: const Center(
+                              child: SizedBox(
+                                height: 20,
+                                width: 20,
+                                child: CircularProgressIndicator(strokeWidth: 2),
+                              ),
                             ),
-                          ),
-                        );
-                      },
-                      errorBuilder: (_, __, ___) => Container(
-                        height: 110,
-                        color: Colors.grey.shade200,
-                        child: const Icon(Icons.image_not_supported_outlined),
+                          );
+                        },
+                        errorBuilder: (_, __, ___) => Container(
+                          color: Colors.grey.shade200,
+                          child: const Icon(Icons.image_not_supported_outlined),
+                        ),
                       ),
                     ),
                   ),

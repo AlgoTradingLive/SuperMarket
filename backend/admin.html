@@ -100,6 +100,12 @@
         <button onclick="applyBulkDiscount()">Apply Discount</button>
       </div>
       <div id="bulkDiscountStatus" style="margin-top:10px;font-size:13px;"></div>
+
+      <hr style="margin:24px 0;border:none;border-top:1px solid #ddd;">
+      <h3>Rebrand Stores (V-Mart → BestBasket)</h3>
+      <p style="font-size:13px;color:#666">तीनही store चं नाव database मध्ये "V-Mart" आहे — नवीन logo नुसार "BestBasket" करण्यासाठी हे बटण एकदाच दाबा.</p>
+      <button onclick="renameStores()">Rename Stores to BestBasket</button>
+      <div id="renameStoresStatus" style="margin-top:10px;font-size:13px;"></div>
     </div>
 
     <div id="manageTab" class="hidden">
@@ -222,6 +228,23 @@ function applyBulkDiscount() {
     }
     statusEl.textContent = `✅ ${data.productsUpdated} products ना ${data.discountPercent}% discount दिला.`;
     loadProducts();
+  }).catch(() => {
+    statusEl.textContent = "❌ अयशस्वी झालं.";
+  });
+}
+
+function renameStores() {
+  const statusEl = document.getElementById('renameStoresStatus');
+  statusEl.textContent = "चालू आहे...";
+  fetch(API + "/admin/rename-stores-to-bestbasket", {
+    method: "POST",
+    headers: { "x-admin-key": adminKey }
+  }).then(r => r.json()).then(data => {
+    if (data.error) {
+      statusEl.textContent = "❌ Error: " + data.error;
+      return;
+    }
+    statusEl.textContent = `✅ ${data.storesUpdated} stores चं नाव BestBasket केलं.`;
   }).catch(() => {
     statusEl.textContent = "❌ अयशस्वी झालं.";
   });
