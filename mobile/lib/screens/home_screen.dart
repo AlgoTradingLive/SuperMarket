@@ -486,14 +486,15 @@ class _HomeScreenState extends State<HomeScreen> {
                           ClipRRect(
                             borderRadius: const BorderRadius.vertical(
                                 top: Radius.circular(12)),
-                            child: Image.network(
-                              p.image,
-                              height: 110,
-                              width: double.infinity,
-                              fit: BoxFit.cover,
-                              errorBuilder: (_, __, ___) => Container(
-                                height: 110,
-                                color: Colors.grey.shade200,
+                            child: AspectRatio(
+                              aspectRatio: 1.3,
+                              child: Image.network(
+                                p.image,
+                                width: double.infinity,
+                                fit: BoxFit.contain,
+                                errorBuilder: (_, __, ___) => Container(
+                                  color: Colors.grey.shade200,
+                                ),
                               ),
                             ),
                           ),
@@ -665,9 +666,9 @@ class _HomeScreenState extends State<HomeScreen> {
             physics: const NeverScrollableScrollPhysics(),
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 4,
-              mainAxisSpacing: 12,
+              mainAxisSpacing: 16,
               crossAxisSpacing: 8,
-              childAspectRatio: 0.78,
+              mainAxisExtent: 108,
             ),
             itemCount: subs.length,
             itemBuilder: (_, i) {
@@ -675,17 +676,18 @@ class _HomeScreenState extends State<HomeScreen> {
               return InkWell(
                 onTap: () => _openSubcategory(s),
                 child: Column(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
                     ClipRRect(
                       borderRadius: BorderRadius.circular(10),
                       child: Image.network(
                         s.icon,
-                        height: 64,
-                        width: 64,
+                        height: 58,
+                        width: 58,
                         fit: BoxFit.cover,
                         errorBuilder: (_, __, ___) => Container(
-                          height: 64,
-                          width: 64,
+                          height: 58,
+                          width: 58,
                           color: Colors.grey.shade200,
                           child: const Icon(Icons.image_not_supported_outlined, size: 20),
                         ),
