@@ -55,6 +55,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
       MaterialPageRoute(
         builder: (_) => ProductsScreen(
           title: s.name,
+          section: s.section,
           subCategory: s.name,
           cart: widget.cart,
           onChangeQty: widget.onChangeQty,
