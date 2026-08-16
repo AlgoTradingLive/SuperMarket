@@ -4,7 +4,7 @@ import '../models/product.dart';
 import '../services/api_service.dart';
 import 'product_detail_screen.dart';
 
-const kBrandGreen = Color(0xFF2E7D32);
+const kBrandGreen = Color(0xFFD32F2F);
 
 class SearchScreen extends StatefulWidget {
   final Map<int, CartItem> cart;

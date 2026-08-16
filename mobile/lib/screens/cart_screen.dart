@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import '../models/product.dart';
 import 'checkout_screen.dart';
 
-const kBrandGreen = Color(0xFF2E7D32);
-const kBrandGreenLight = Color(0xFFE8F5E9);
+const kBrandGreen = Color(0xFFD32F2F);
+const kBrandGreenLight = Color(0xFFFFEBEE);
 
 class CartScreen extends StatefulWidget {
   final Map<int, CartItem> cart;

@@ -5,7 +5,7 @@ import 'package:geolocator/geolocator.dart';
 import '../models/store.dart';
 import '../services/api_service.dart';
 
-const kBrandGreen = Color(0xFF2E7D32);
+const kBrandGreen = Color(0xFFD32F2F);
 
 class StoreSelectScreen extends StatefulWidget {
   final Store? selected;

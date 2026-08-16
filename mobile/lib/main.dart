@@ -39,9 +39,9 @@ class QuickMartApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       scaffoldMessengerKey: PushService.messengerKey,
       theme: ThemeData(
-        primaryColor: const Color(0xFF2E7D32),
+        primaryColor: const Color(0xFFD32F2F),
         colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xFF2E7D32),
+          seedColor: const Color(0xFFD32F2F),
         ),
         useMaterial3: true,
       ),

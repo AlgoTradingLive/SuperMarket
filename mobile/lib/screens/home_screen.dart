@@ -9,8 +9,8 @@ import 'category_screen.dart';
 import 'search_screen.dart';
 import 'product_detail_screen.dart';
 
-const kBrandGreen = Color(0xFF2E7D32);
-const kBrandGreenLight = Color(0xFFE8F5E9);
+const kBrandGreen = Color(0xFFD32F2F);
+const kBrandGreenLight = Color(0xFFFFEBEE);
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});

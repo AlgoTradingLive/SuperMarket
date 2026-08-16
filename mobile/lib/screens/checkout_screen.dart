@@ -7,7 +7,7 @@ import '../services/api_service.dart';
 import '../services/push_service.dart';
 import 'store_select_screen.dart';
 
-const kBrandGreen = Color(0xFF2E7D32);
+const kBrandGreen = Color(0xFFD32F2F);
 
 class CheckoutScreen extends StatefulWidget {
   final List<CartItem> items;

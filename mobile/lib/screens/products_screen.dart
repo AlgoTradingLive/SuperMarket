@@ -5,7 +5,7 @@ import '../services/wishlist_store.dart';
 import 'cart_screen.dart';
 import 'product_detail_screen.dart';
 
-const kBrandGreen = Color(0xFF2E7D32);
+const kBrandGreen = Color(0xFFD32F2F);
 
 class ProductsScreen extends StatefulWidget {
   final String title;
