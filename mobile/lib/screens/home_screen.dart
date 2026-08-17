@@ -384,12 +384,12 @@ class _HomeScreenState extends State<HomeScreen> {
       padding: const EdgeInsets.symmetric(vertical: 14),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [Colors.orange.shade50, Colors.orange.shade100],
+          colors: [Color.lerp(kBrandGreen, Colors.white, 0.88)!, Color.lerp(kBrandGreen, Colors.white, 0.78)!],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.orange.shade200),
+        border: Border.all(color: Color.lerp(kBrandGreen, Colors.white, 0.55)!),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -406,7 +406,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.w900,
-                        color: Colors.deepOrange.shade800,
+                        color: kBrandGreen,
                         fontStyle: FontStyle.italic,
                       ),
                     ),
@@ -415,7 +415,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       padding: const EdgeInsets.symmetric(
                           horizontal: 10, vertical: 4),
                       decoration: BoxDecoration(
-                        color: Colors.deepOrange.shade700,
+                        color: kBrandGreen,
                         borderRadius: BorderRadius.circular(20),
                       ),
                       child: const Text(
@@ -449,7 +449,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   child: Text("View All",
                       style: TextStyle(
-                          color: Colors.deepOrange.shade800,
+                          color: kBrandGreen,
                           fontWeight: FontWeight.bold,
                           fontSize: 12)),
                 ),
