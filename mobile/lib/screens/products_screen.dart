@@ -231,25 +231,20 @@ class _ProductsScreenState extends State<ProductsScreen> {
                 children: [
                   ClipRRect(
                     borderRadius: BorderRadius.circular(8),
-                    child: AspectRatio(
-                      // Square-ish, and scales with the card's own width —
-                      // so the whole product photo shows on every screen
-                      // size instead of a fixed-height crop.
-                      aspectRatio: 1.3,
+                    child: Container(
+                      height: 110,
+                      width: double.infinity,
+                      color: Colors.grey.shade50,
                       child: Image.network(
                         p.image,
-                        width: double.infinity,
                         fit: BoxFit.contain,
                         loadingBuilder: (context, child, progress) {
                           if (progress == null) return child;
-                          return Container(
-                            color: Colors.grey.shade100,
-                            child: const Center(
-                              child: SizedBox(
-                                height: 20,
-                                width: 20,
-                                child: CircularProgressIndicator(strokeWidth: 2),
-                              ),
+                          return const Center(
+                            child: SizedBox(
+                              height: 20,
+                              width: 20,
+                              child: CircularProgressIndicator(strokeWidth: 2),
                             ),
                           );
                         },
@@ -303,11 +298,14 @@ class _ProductsScreenState extends State<ProductsScreen> {
                 ],
               ),
               const SizedBox(height: 6),
-              Text(p.name,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style:
-                      const TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
+              SizedBox(
+                height: 34,
+                child: Text(p.name,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style:
+                        const TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
+              ),
               Text(p.unit, style: TextStyle(fontSize: 11, color: Colors.grey.shade600)),
               const SizedBox(height: 4),
               Row(
