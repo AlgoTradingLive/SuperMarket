@@ -9,8 +9,14 @@ import 'category_screen.dart';
 import 'search_screen.dart';
 import 'product_detail_screen.dart';
 
+// ── Brand theme ──────────────────────────────────────────────
+// To re-theme for a different client, change ONLY kBrandGreen below
+// (their brand/logo color). kHeaderBg is a light tint of it, computed
+// automatically, so the header always looks clean no matter the color.
 const kBrandGreen = Color(0xFFD32F2F);
 const kBrandGreenLight = Color(0xFFFFEBEE);
+final Color kHeaderBg = Color.lerp(kBrandGreen, Colors.white, 0.92)!;
+// ─────────────────────────────────────────────────────────────
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -205,8 +211,9 @@ class _HomeScreenState extends State<HomeScreen> {
       backgroundColor: const Color(0xFFF5F6F8),
       drawer: AppDrawer(cart: cart, onChangeQty: _changeQty),
       appBar: AppBar(
-        backgroundColor: kBrandGreen,
-        foregroundColor: Colors.white,
+        backgroundColor: kHeaderBg,
+        foregroundColor: kBrandGreen,
+        elevation: 0.5,
         title: Image.asset(
           'assets/logo.png',
           height: 40,
@@ -269,20 +276,20 @@ class _HomeScreenState extends State<HomeScreen> {
             // Delivery address bar
             Container(
               width: double.infinity,
-              color: kBrandGreen,
+              color: kHeaderBg,
               padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
               child: Row(
                 children: [
-                  const Icon(Icons.location_on, color: Colors.white, size: 18),
+                  const Icon(Icons.location_on, color: kBrandGreen, size: 18),
                   const SizedBox(width: 6),
                   const Text("Delivery to: 422010",
-                      style: TextStyle(color: Colors.white, fontSize: 13)),
+                      style: TextStyle(color: kBrandGreen, fontSize: 13)),
                   const Spacer(),
                   TextButton(
                     onPressed: () {},
-                    style: TextButton.styleFrom(backgroundColor: Colors.white24),
+                    style: TextButton.styleFrom(backgroundColor: kBrandGreenLight),
                     child: const Text("Change",
-                        style: TextStyle(color: Colors.white, fontSize: 12)),
+                        style: TextStyle(color: kBrandGreen, fontSize: 12, fontWeight: FontWeight.bold)),
                   ),
                 ],
               ),
