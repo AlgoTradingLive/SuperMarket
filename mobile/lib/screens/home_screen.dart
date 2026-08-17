@@ -15,7 +15,7 @@ import 'product_detail_screen.dart';
 // automatically, so the header always looks clean no matter the color.
 const kBrandGreen = Color(0xFFD32F2F);
 const kBrandGreenLight = Color(0xFFFFEBEE);
-final Color kHeaderBg = Color.lerp(kBrandGreen, Colors.white, 0.78)!;
+final Color kHeaderBg = Color.lerp(kBrandGreen, Colors.white, 0.70)!;
 // ─────────────────────────────────────────────────────────────
 
 class HomeScreen extends StatefulWidget {
